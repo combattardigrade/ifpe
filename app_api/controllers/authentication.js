@@ -154,7 +154,8 @@ module.exports.verifyEmail = function (req, res) {
         // verify email
         authRequest.user.emailVerified = 1
         await authRequest.user.save({transaction: t})
-        sendJSONresponse(res,200,{message: 'Email verificado correctamente'})
+        const token = authRequest.user.generateJwt()
+        sendJSONresponse(res,200,{message: 'Email verificado correctamente',token:token})
         return
 
     })

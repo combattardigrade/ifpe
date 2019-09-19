@@ -98,7 +98,7 @@ module.exports = (sequelize, DataTypes) => {
 
     User.prototype.generateJwt = function() {
         const expiry = new Date()
-        expiri.setDate(expiry.getDate() + 1)
+        expiry.setDate(expiry.getDate() + 1)
         return jwt.sign({
             id: this.id,
             email: this.email,

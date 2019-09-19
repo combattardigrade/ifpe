@@ -30,8 +30,13 @@ passport.use(new localStrategy({
 
                 // check email verification
                 if(user.emailVerified === 0) {
-                    // send verification code
+                    // check if new verification code must be created
                     
+                    // send verification code
+
+                    return done(null, false, {
+                        message: 'Verifica tu email ingresando el código que enviamos a tu cuenta'
+                    })
                 }
 
                 // generate jwt token

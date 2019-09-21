@@ -3,7 +3,24 @@ const fetch = require('node-fetch')
 const sendJSONresponse = require('../../utils/index').sendJSONresponse
 const API_HOST = process.env.API_HOST
 
-module.exports.isAuthenticated = function(req,res) {
+module.exports.test = function(req,res) {
+    //console.log(path.join(__dirname + '/public/index.html'))
+    //res.send('hello')
+    //console.log(path.resolve(__dirname, '..'))
+    console.log(APP_ROOT)
+    try{
+        res.sendFile(APP_ROOT + '/public/index.html')
+    }
+    catch(e) {
+        console.log(e)
+    }
+    //app.get('*',(req, res) => res.sendFile(path.join(__dirname,'/../../public/index.html')))
+
+    return
+}
+
+
+module.exports.checkAuth = function(req,res) {
     sendJSONresponse(res,200,{message: 'AUTHENTICATED'})
     return
 }

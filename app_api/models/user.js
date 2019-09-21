@@ -19,46 +19,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
-        primerNombre: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        segundoNombre: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        apellidoPaterno: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        apellidoMaterno: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        gender: {
+        countryCode: {
             type: DataTypes.STRING,
             allowNull: true,
-        },
-        dateOfBirth: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        countryOfBirth: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        countryOfResidence: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        occupation: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        firstGPSLocation: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
+        },            
         emailVerified: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -70,9 +34,12 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0
         },
         accountType: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
+            allowNull: true,                      
+        },
+        nationality: {
+            type: DataTypes.STRING,
             allowNull: true,
-            foreignKey: true,            
         },
         accountLevel: {
             type: DataTypes.INTEGER,

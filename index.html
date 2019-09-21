@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+
+            $.ajax({
+                type: 'GET',
+                url: 'http://localhost:3001/app/login'
+            })
+                .done((data) => {
+                    console.log(data.csrf)
+                    $('#csrf').val(data.csrf)
+                })
+
+            $('#loginForm').submit(function(e){
+                alert()
+                e.preventDefault();
+                const email = $('#email').val()
+                const csrf = $('#csrf').val()
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://localhost:3001/app/login',
+                    data: {
+                        _csrf: csrf
+                    }
+                })
+                    .done((data) => {
+                        console.log(data)
+                    })
+                    .fail((data) => {
+                        console.log(data)
+                    })
+               
+            })
+        })
+    </script>
+</head>
+
+<body>
+    <form id="loginForm" method="post" action="">
+        <input type="hidden" id="csrf">
+        <input type="text" id="email">
+        <input value="Enviar" type="submit">
+    </form>
+</body>
+
+</html>

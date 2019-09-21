@@ -14,9 +14,11 @@ module.exports.signup = function (req, res) {
     const email = req.body.email
     const password = req.body.password
     const rpassword = req.body.rpassword
+    const accountType = req.body.accountType
+    const nationality = req.body.nationality
     
     // check if all field were sent
-    if (!email || !password || !rpassword) {
+    if (!email || !password || !rpassword || !accountType || !nationality) {
         sendJSONresponse(res, 422, { message: 'Completa todos los campos requeridos' })
         return
     }
@@ -62,10 +64,22 @@ module.exports.signup = function (req, res) {
         return
     }
 
+    // check account type
+    if(!(accountType === 'persona_fisica' || accountType === 'persona_moral')) {
+        sendJSONresponse(res, 404, {message: 'Ingresa un tipo de cuenta válido'})
+        return
+    }
+
+    // check nationality in db
+
     sequelize.transaction(function (t) {
         return User.findOrCreate({
             where: {
                 email: email
+            },
+            defaults: {
+                accountType,
+                nationality
             },
             transaction: t
         })
@@ -169,12 +183,12 @@ module.exports.verifyEmail = function (req, res) {
 module.exports.login = function (req, res) {
     const email = req.body.email
     const password = req.body.password
-
+    
     if (!email || !password) {
         sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
         return
     }
-
+    
     passport.authenticate('local', function (err, token, info) {
         if (err) {
             sendJSONresponse(res, 404, err)
@@ -185,5 +199,5 @@ module.exports.login = function (req, res) {
             return
         }
         sendJSONresponse(res, 200, { token: token })
-    })
+    })(req,res)
 }

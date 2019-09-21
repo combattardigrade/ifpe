@@ -10,18 +10,23 @@ const csurf = require('csurf')
 const cookieParser = require('cookie-parser')
 
 require('./app_api/config/passport')
+const routes = require('./app_server/routes/index')
 const routesApi = require('./app_api/routes/index')
 const app = express()
 
-app.use(cors({origin: '*'}))
+app.use(cors({origin: '*',credentials: true , origin: 'http://localhost:3000'}))
 app.use(fileUpload({limits: {fileSize: 10 * 1024 * 1024}}))
 app.use(bodyParser.json({limit:'50mb'}))
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}))
 app.use(express.static(path.join(__dirname,'public')))
+
+app.use(passport.initialize())
 app.use('/api',routesApi)
 // csrf and cookies
 app.use(cookieParser())
-app.use(csurf({cookie: true}))
+app.use(csurf({cookie: {httpOnly: true}}))
+app.use('/',routes)
+
 
 app.use((err, req, res, next) => {
     if(err.name === 'UnauthorizedError') {
@@ -30,10 +35,9 @@ app.use((err, req, res, next) => {
     } else if (err.code === 'EBADCSRFTOKEN') {
         res.status(403)
         res.send('CSRF verification failed')
-    } else if (err.message === 'missing_admin_token_cookie') {
-        res.writeHead(302, {
-            Location: process.env.SERVER_HOST + '/login'
-        })
+    } else if (err.message === 'missing_token_cookie') {
+        res.status(401)
+        res.json({message: 'User not authenticated' })
         res.end()
     }
 })

@@ -4,8 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "nodemon --exec babel-node app.js && webpack --mode development --watch ",
-    "dev-client": "webpack-dev-server"
+    "test": "nodemon --exec babel-node app.js",
+    "dev-client": "webpack-dev-server",
+    "build": "webpack --config webpack.config.js"
   },
   "author": "",
   "license": "ISC",

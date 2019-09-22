@@ -7,7 +7,10 @@ const webpack = require('webpack')
 // https://itnext.io/auto-reload-a-full-stack-javascript-project-using-nodemon-and-webpack-dev-server-together-a636b271c4e
 
 module.exports = {
-    entry: path.join(__dirname, 'react_src', 'index.js'),
+    entry: {
+        app: path.join(__dirname, 'app_src', 'index.js'),
+        //admin: path.join(__dirname, 'admin_src','index.js')
+    },
     module: {
         rules: [
             {
@@ -25,7 +28,7 @@ module.exports = {
     output: {
         path: path.join(__dirname, 'public','js'),
         publicPath: '/js',
-        filename: 'bundle.js'
+        filename: '[name].js'
     },
     plugins: [         
         new webpack.HotModuleReplacementPlugin(),

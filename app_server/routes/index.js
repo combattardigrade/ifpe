@@ -18,10 +18,12 @@ const auth = jwt({
 
 
 const authController = require('../controllers/authentication')
+const adminController = require('../controllers/admin')
 
 router.get('/app/login', authController.renderLogin)
 router.post('/app/login', authController.login)
 router.get('/app/checkAuth', auth, authController.checkAuth)
+router.get('/admin/*', adminController.renderAdminApp)
 router.get('*', authController.test)
 // handle any requests that don't match the ones above
 //router.get('*', authController.test)

@@ -17,12 +17,13 @@ export function handleLoginCSRF(cb) {
 }
 
 
-export function handleLogin(email, password, csrf, cb) {
-    
+export function handleLogin(params, cb) {
+    console.log(params)
     return (dispatch) => {
-        return login({email,password,_csrf: csrf})
+        return login(params)
             
             .then((res) => {
+                console.log(res)
                 // save token in store
                 if(res.token) {
                     dispatch(saveToken(res.token))
@@ -30,7 +31,8 @@ export function handleLogin(email, password, csrf, cb) {
                 
                 cb(res)
             })
-            .catch((err) => {                
+            .catch((err) => {             
+                console.log(err)   
                 cb({message: 'Error al intentar realizar la operación'})
             })
     }

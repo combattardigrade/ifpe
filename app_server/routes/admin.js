@@ -12,7 +12,7 @@ const auth = jwt({
     }
 })
 
-const Recaptcha = require('express-recaptcha').Recaptcha
+const Recaptcha = require('express-recaptcha').RecaptchaV3
 const recaptcha = new Recaptcha(process.env.RECAPTCHA_SITE_KEY, process.env.RECAPTCHA_SECRET_KEY)
 
 
@@ -20,7 +20,7 @@ const authController = require('../controllers/authentication')
 const adminController = require('../controllers/admin')
 
 router.get('/login', authController.renderLogin)
-router.post('/login', authController.login)
+router.post('/login', recaptcha.middleware.verify, authController.login)
 router.get('/checkAuth', auth, authController.checkAuth)
 router.get('/*', adminController.renderAdminApp)
 

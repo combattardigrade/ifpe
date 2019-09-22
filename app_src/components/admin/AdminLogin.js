@@ -2,15 +2,17 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { handleLogin, handleLoginCSRF } from '../../actions/authentication'
 import { Redirect } from 'react-router-dom'
-import Recaptcha from 'react-recaptcha'
+import Recaptcha from 'react-google-recaptcha'
 // components
 import Loading from '../Loading'
 
 class AdminLogin extends Component {
     state = {
         loading: true,
-        serverRes: ''
+        serverRes: '',        
     }
+
+    recaptchaRef = React.createRef()
 
     componentDidMount() {
         document.title = "Admin Login"
@@ -22,23 +24,35 @@ class AdminLogin extends Component {
         e.preventDefault()
         const email = e.target.email.value
         const password = e.target.password.value
-
+        
         const { dispatch, authentication } = this.props
         const csrf = authentication.csrf
 
-        if (!email || !password) {
+        const recaptchaValue = this.recaptchaRef.current.getValue()        
+        
+        if (!email || !password || !recaptchaValue) {
             this.setState({ serverRes: 'Ingresa todos los campos requeridos' })
             return
         }
 
-        dispatch(handleLogin(email, password, csrf, (res) => {
+        const params = {
+            email,
+            password,
+            _csrf: csrf,
+            'g-recaptcha-response':recaptchaValue
+        }
+
+        dispatch(handleLogin(params, (res) => {
             'message' in res
                 ? this.setState({ serverRes: res.message })
                 : this.setState({ redirect: true })
         }))
 
-
+        // reset recaptcha
+        this.recaptchaRef.current.reset()
     }
+
+    
 
     render() {
         const { serverRes, redirect, loading } = this.state
@@ -59,9 +73,12 @@ class AdminLogin extends Component {
                 <form method="post" onSubmit={this.handleSubmit}>
                     <input type="text" name="email" />
                     <input type="password" name="password" />
-                    <button type="submit" >Login</button>
+                    <button name="test" type="submit" >Login</button>
                     <Recaptcha
+                        ref={this.recaptchaRef}
                         sitekey={RECAPTCHA_SITE_KEY}
+                        
+                        
                     />
                 </form>
 

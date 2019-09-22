@@ -34,7 +34,12 @@ module.exports.renderLogin = function(req,res) {
 module.exports.login = function(req,res) {
     const email = req.body.email
     const password = req.body.password    
-   
+    console.log(req.recaptcha.error)
+    if(req.recaptcha.error) {
+        sendJSONresponse(res,404,{message: 'Verifica que eres humano'})
+        return
+    }
+
     fetch(API_HOST + '/login', {
         method: 'post',
         headers: {

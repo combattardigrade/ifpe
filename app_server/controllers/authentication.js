@@ -1,42 +1,28 @@
 
 const fetch = require('node-fetch')
+const rp = require('request-promise')
 const sendJSONresponse = require('../../utils/index').sendJSONresponse
 const API_HOST = process.env.API_HOST
 
-module.exports.test = function(req,res) {
-    //console.log(path.join(__dirname + '/public/index.html'))
-    //res.send('hello')
-    //console.log(path.resolve(__dirname, '..'))
-    console.log(APP_ROOT)
-    try{
-        res.sendFile(APP_ROOT + '/public/index.html')
-    }
-    catch(e) {
-        console.log(e)
-    }
-    //app.get('*',(req, res) => res.sendFile(path.join(__dirname,'/../../public/index.html')))
 
-    return
-}
-
-module.exports.checkPrivileges = function(req,res) {        
-    fetch(API_HOST + '/admin/checkPrivileges', {
+module.exports.checkPrivileges = function(req,res) { 
+    rp({
+        uri: API_HOST + '/admin/checkPrivileges',
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + req.cookies.token
-        }        
+        },
+        json: true
     })
-        .then(response => response.json())
-        .then(response => {
-            if(response.status === 200) {
-                console.log(response)
-                sendJSONresponse(res,200,{message})
-            } else {
-                sendJSONresponse(res,401,response)
-            }
+        .then((response) => {
+           if(response.message === 'AUTHORIZED')
+                sendJSONresponse(res,200,response)
         })
-        
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res,401,err)
+        })
 }
 
 module.exports.checkAuth = function(req,res) {

@@ -14,11 +14,9 @@ function withAdminAuth(ComponentToProtect) {
             redirect: false
         }
     
-        componentDidMount() {
-            
+        componentDidMount() {            
             checkAdminAuth()
-                .then(res => {              
-                    console.log(res)
+                .then(res => {  
                     if(res.status === 200) {
                         this.setState({loading: false})
                     } else {    

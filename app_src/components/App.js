@@ -10,9 +10,6 @@ import withAuth from './withAuth'
 // admin
 import Admin from './admin/Admin'
 
-
-
-
 class App extends Component {
 
   componentDidMount() {

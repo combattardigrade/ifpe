@@ -1,6 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
-
+const Dotenv = require('dotenv-webpack')
 // react webpack express babel
 // https://levelup.gitconnected.com/how-to-setup-environment-using-react-webpack-express-babel-d5f1b572b678
 // nodemon and webpack dev server
@@ -32,6 +32,7 @@ module.exports = {
     },
     plugins: [         
         new webpack.HotModuleReplacementPlugin(),
+        new Dotenv()
     ],
     devServer: {
         historyApiFallback: true,

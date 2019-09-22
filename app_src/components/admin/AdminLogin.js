@@ -42,7 +42,7 @@ class AdminLogin extends Component {
 
     render() {
         const { serverRes, redirect, loading } = this.state
-        const RECAPTCHA_SITE_KEY = '6Ld3u7kUAAAAANCHFzNDStqDM_RAbr9qulKaeekm'
+        const RECAPTCHA_SITE_KEY = process.env.RECAPTCHA_SITE_KEY
         
         if (loading === true) {
             return <Loading />

@@ -18,17 +18,16 @@ export function handleLoginCSRF(cb) {
 
 
 export function handleLogin(params, cb) {
-    console.log(params)
+    
     return (dispatch) => {
         return login(params)
             
             .then((res) => {
-                console.log(res)
+                // remove?               
                 // save token in store
                 if(res.token) {
                     dispatch(saveToken(res.token))
-                } 
-                
+                }                 
                 cb(res)
             })
             .catch((err) => {             

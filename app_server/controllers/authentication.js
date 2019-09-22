@@ -19,6 +19,25 @@ module.exports.test = function(req,res) {
     return
 }
 
+module.exports.checkPrivileges = function(req,res) {        
+    fetch(API_HOST + '/admin/checkPrivileges', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        }        
+    })
+        .then(response => response.json())
+        .then(response => {
+            if(response.status === 200) {
+                console.log(response)
+                sendJSONresponse(res,200,{message})
+            } else {
+                sendJSONresponse(res,401,response)
+            }
+        })
+        
+}
 
 module.exports.checkAuth = function(req,res) {
     sendJSONresponse(res,200,{message: 'AUTHENTICATED'})
@@ -27,14 +46,14 @@ module.exports.checkAuth = function(req,res) {
 
 
 module.exports.renderLogin = function(req,res) {
-    sendJSONresponse(res,200,{csrf: req.csrfToken(),msg:"test"})
+    sendJSONresponse(res,200,{csrf: req.csrfToken()})
     return
 }
 
 module.exports.login = function(req,res) {
     const email = req.body.email
     const password = req.body.password    
-    console.log(req.recaptcha.error)
+    
     if(req.recaptcha.error) {
         sendJSONresponse(res,404,{message: 'Verifica que eres humano'})
         return

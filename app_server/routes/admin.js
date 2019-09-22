@@ -4,7 +4,7 @@ const jwt = require('express-jwt')
 const auth = jwt({
     secret: process.env.JWT_SECRET,
     getToken: function(req) {
-        if(req.cookies.token !== undefined) {
+        if(req.cookies.token !== undefined) {            
             return req.cookies.token
         } else {
             throw new Error('missing_token_cookie')
@@ -22,6 +22,7 @@ const adminController = require('../controllers/admin')
 router.get('/login', authController.renderLogin)
 router.post('/login', recaptcha.middleware.verify, authController.login)
 router.get('/checkAuth', auth, authController.checkAuth)
+router.get('/checkPrivileges', auth, authController.checkPrivileges)
 router.get('/*', adminController.renderAdminApp)
 
 module.exports =  router

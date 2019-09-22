@@ -8,6 +8,7 @@ const auth = jwt({
 const authenticationController = require('../controllers/authentication')
 const phoneController = require('../controllers/phone')
 const locationController = require('../controllers/location')
+const adminController = require('../controllers/admin')
 
 // authentication
 router.post('/signup', authenticationController.signup)
@@ -20,5 +21,8 @@ router.post('/verifyPhone', phoneController.verifyPhone)
 
 // gps location
 router.post('/location', auth, locationController.saveLocation )
+
+// admin
+router.get('/admin/checkPrivileges', auth, adminController.checkPrivileges)
 
 module.exports = router

@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import Loading from './Loading'
 import Login from './Login'
 import withAuth from './withAuth'
+import withAdminAuth from './withAdminAuth'
 
 // admin
 import Admin from './admin/Admin'
@@ -29,7 +30,7 @@ class App extends Component {
             :
             <Fragment>
               <Route path='/login' exact component={Login} />
-              <Route path='/secret' exact component={withAuth(Secret)} />
+              <Route path='/secret' exact component={withAdminAuth(Secret)} />
               <Route path='/admin' component={Admin} />
             </Fragment>
           }

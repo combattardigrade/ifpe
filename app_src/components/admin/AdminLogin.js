@@ -73,7 +73,7 @@ class AdminLogin extends Component {
                 <form method="post" onSubmit={this.handleSubmit}>
                     <input type="text" name="email" />
                     <input type="password" name="password" />
-                    <button name="test" type="submit" >Login</button>
+                    <button type="submit" >Login</button>
                     <Recaptcha
                         ref={this.recaptchaRef}
                         sitekey={RECAPTCHA_SITE_KEY}

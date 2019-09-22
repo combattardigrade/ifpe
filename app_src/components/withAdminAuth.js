@@ -1,25 +1,27 @@
 import React, { Component, Fragment } from 'react'
+
 import { Redirect } from 'react-router-dom'
-import { checkToken } from '../utils/api'
+import {  checkAdminAuth } from '../utils/api'
+import { withCookies } from 'react-cookie';
 
 // Route authentication
 // https://medium.com/@faizanv/authentication-for-your-react-and-express-application-w-json-web-tokens-923515826e0
 
-export default function withAuth(ComponentToProtect) {
-    return class extends Component {
+function withAdminAuth(ComponentToProtect) {
+    class AdminAuth extends Component {
         state = {
             loading: true,
             redirect: false
         }
     
         componentDidMount() {
-            checkToken()
-                .then(res => {
-                    
+            
+            checkAdminAuth()
+                .then(res => {              
+                    console.log(res)
                     if(res.status === 200) {
                         this.setState({loading: false})
-                    } else {
-                        console.log(res)
+                    } else {    
                         const error = new Error(res.error)
                         throw error
                     }
@@ -46,4 +48,8 @@ export default function withAuth(ComponentToProtect) {
             )
         }
     }
+
+    return withCookies(AdminAuth)
 }
+
+export default withAdminAuth

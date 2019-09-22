@@ -1,5 +1,11 @@
 const API = 'http://localhost:3000/admin/'
 
+export function checkAdminAuth() {
+    return fetch(API + 'checkPrivileges', {
+        method: 'GET',
+        credentials: 'include'
+    })
+}
 
 export function checkToken() {
     return fetch(API + 'checkAuth', {

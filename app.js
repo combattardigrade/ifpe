@@ -33,7 +33,7 @@ global.APP_ROOT = path.resolve(__dirname)
 app.use((err, req, res, next) => {
     if(err.name === 'UnauthorizedError') {
         res.status(401)
-        res.json({message: err.name + ': ' + err.name })
+        res.json({message: 'Unauthorized user' })
     } else if (err.code === 'EBADCSRFTOKEN') {
         res.status(403)
         res.send('CSRF verification failed')

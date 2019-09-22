@@ -10,7 +10,7 @@ const csurf = require('csurf')
 const cookieParser = require('cookie-parser')
 
 require('./app_api/config/passport')
-const routes = require('./app_server/routes/index')
+const routesAdmin = require('./app_server/routes/admin')
 const routesApi = require('./app_api/routes/index')
 const app = express()
 
@@ -25,7 +25,7 @@ app.use('/api',routesApi)
 // csrf and cookies
 app.use(cookieParser())
 app.use(csurf({cookie: {httpOnly: true}}))
-app.use('/',routes)
+app.use('/admin',routesAdmin)
 
 // global variable
 global.APP_ROOT = path.resolve(__dirname)

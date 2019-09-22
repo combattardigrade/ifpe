@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000/app/'
+const API = 'http://localhost:3000/admin/'
 
 
 export function checkToken() {

@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { Route } from 'react-router-dom'
 
 import AdminLogin from './AdminLogin'
+import AdminDashboard from './AdminDashboard'
 
 class Admin extends Component {
     render() {
@@ -11,6 +12,7 @@ class Admin extends Component {
             <div>
                 <Route path={match.path} exact component={AdminLogin} />
                 <Route path={`${match.path}/login`} component={AdminLogin} />
+                <Route path={`${match.path}/dashboard`} component={AdminDashboard} />
             </div>
         )
     }

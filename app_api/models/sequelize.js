@@ -6,7 +6,7 @@ const SepomexModel = require('./sepomex')
 const AuthRequestModel = require('./authRequest')
 const UserModel = require('./user')
 const UserLocationModel = require('./userLocation')
-const UserDataModel = require('./userData')
+const UserProfileModel = require('./userProfile')
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -31,12 +31,12 @@ const UserAddress = UserAddressModel(sequelize, Sequelize)
 const Sepomex = SepomexModel(sequelize, Sequelize)
 const AuthRequest = AuthRequestModel(sequelize, Sequelize)
 const UserLocation = UserAddressModel(sequelize, Sequelize)
-const UserData = UserDataModel(sequelize, Sequelize)
+const UserProfile = UserProfileModel(sequelize, Sequelize)
 
 User.hasOne(UserAddress)
 AuthRequest.belongsTo(User)
 User.hasMany(UserLocation)
-User.hasOne(UserData)
+User.hasOne(UserProfile)
 
 sequelize.sync({force: false})
     .then(() => {
@@ -51,6 +51,6 @@ module.exports = {
     Sepomex,
     AuthRequest,
     UserLocation,
-    UserData,
+    UserProfile,
     sequelize
 }

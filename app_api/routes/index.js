@@ -25,5 +25,7 @@ router.post('/location', auth, locationController.saveLocation )
 // admin
 router.get('/admin/checkPrivileges', auth, adminController.checkPrivileges)
 router.get('/admin/getUsersByTypeAndLevel', auth, adminController.getUsersByTypeAndLevel)
+router.get('/admin/searchUserByEmail', auth, adminController.searchUserByEmail)
+router.get('/admin/searchUserByFullName', auth, adminController.searchUserByFullName)
 
 module.exports = router

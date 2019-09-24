@@ -1,5 +1,36 @@
 const API = 'http://localhost:3000/admin/'
 
+export function searchUserByFullName(params) {
+    return fetch(API + 'searchUserByFullName?primerNombre=' + params.primerNombre +
+        '&apellidoPaterno=' + params.apellidoPaterno + '&apellidoMaterno=' + params.apellidoMaterno, {
+        method: 'GET',
+        credentials: 'include'
+    })
+}
+
+export function searchUserByEmail(email) {
+    return fetch(API + 'searchUserByEmail?email=' + email, {
+        method: 'GET',
+        credentials: 'include'
+    })
+}
+
+
+export function getUsersByTypeAndLevel(params) {
+    const accountType = params.accountType ? params.accountType : 'all'
+    const accountLevel = params.accountLevel ? parseInt(params.accountLevel) : 0
+    const accountLevelGte = params.accountLevelGte ? parseInt(params.accountLevelGte) : 0
+    const page = params.page ? parseInt(params.page) : 1
+    
+    const url = API + 'getUsersByTypeAndLevel?accountType=' +
+        accountType + '&accountLevel=' + accountLevel +
+        '&accountLevelGte=' + accountLevelGte + '&page=' + page
+    return fetch(url, {
+        method: 'GET',
+        credentials: 'include'
+    })
+}
+
 export function checkAdminAuth() {
     return fetch(API + 'checkPrivileges', {
         method: 'GET',

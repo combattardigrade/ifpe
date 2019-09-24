@@ -1,0 +1,7 @@
+.dropdown-link a {
+    /*background: red; */
+    color: #899294;
+}
+.table-bordered thead td{
+    font-weight: bold;
+}

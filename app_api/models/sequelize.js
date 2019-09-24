@@ -1,12 +1,26 @@
 const Sequelize = require('sequelize')
 const AccountLevelModel = require('./accountLevel')
 const AccountTypeModel = require('./accountType')
-const UserAddressModel = require('./userAddress')
 const SepomexModel = require('./sepomex')
 const AuthRequestModel = require('./authRequest')
 const UserModel = require('./user')
-const UserLocationModel = require('./userLocation')
 const UserProfileModel = require('./userProfile')
+const DocumentModel = require('./document')
+const LocationModel = require('./location')
+const AddressModel = require('./address')
+const TransactionModel = require('./transaction')
+const FeesModel = require('./fees')
+const BalanceModel = require('./balance')
+const AssetModel = require('./asset')
+const CompanyProfileModel = require('./companyProfile')
+const PlatformVersionModel = require('./platformVersion')
+const DeviceFingerprintModel = require('./deviceFingerprint')
+const SessionModel = require('./session')
+const TwoFactorAuthModel = require('./twoFactorAuth')
+const SecurityQuestionModel = require('./securityQuestion')
+const ContactModel = require('./contact')
+const CardModel = require('./card')
+const FundsAccountModel = require('./fundsAccount')
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -23,22 +37,53 @@ const sequelize = new Sequelize(
     }
 )
 
+const User = UserModel(sequelize, Sequelize)
+const UserProfile = UserProfileModel(sequelize, Sequelize)
+const Document = DocumentModel(sequelize, Sequelize)
+const Location = LocationModel(sequelize, Sequelize)
+const Address = AddressModel(sequelize, Sequelize)
+const Transaction = TransactionModel(sequelize, Sequelize)
+const Fees = FeesModel(sequelize, Sequelize)
+const Balance = BalanceModel(sequelize, Sequelize)
+const CompanyProfile = CompanyProfileModel(sequelize, Sequelize)
+const DeviceFingerprint = DeviceFingerprintModel(sequelize, Sequelize)
+const Session = SessionModel(sequelize, Sequelize)
+const TwoFactorAuth = TwoFactorAuthModel(sequelize, Sequelize)
+const SecurityQuestion = SecurityQuestionModel(sequelize, Sequelize)
+const Contact = ContactModel(sequelize, Sequelize)
+const Card = CardModel(sequelize, Sequelize)
+const FundsAccount = FundsAccountModel(sequelize, Sequelize)
 
+const AuthRequest = AuthRequestModel(sequelize, Sequelize)
+
+const Asset = AssetModel(sequelize, Sequelize)
+const Sepomex = SepomexModel(sequelize, Sequelize)
 const AccountLevel = AccountLevelModel(sequelize, Sequelize)
 const AccountType = AccountTypeModel(sequelize, Sequelize)
-const User = UserModel(sequelize, Sequelize)
-const UserAddress = UserAddressModel(sequelize, Sequelize)
-const Sepomex = SepomexModel(sequelize, Sequelize)
-const AuthRequest = AuthRequestModel(sequelize, Sequelize)
-const UserLocation = UserAddressModel(sequelize, Sequelize)
-const UserProfile = UserProfileModel(sequelize, Sequelize)
+const PlatformVersion = PlatformVersionModel(sequelize, Sequelize)
 
-User.hasOne(UserAddress)
-AuthRequest.belongsTo(User)
-User.hasMany(UserLocation)
+
+User.hasOne(CompanyProfile)
+
+User.hasMany(Document)
+User.hasMany(Address)
+User.hasMany(Location)
+User.hasMany(Transaction)
+User.hasMany(Fees)
+User.hasMany(Balance)
+User.hasMany(DeviceFingerprint)
+User.hasMany(Session)
+User.hasMany(Contact)
+User.hasMany(Card)
+User.hasMany(FundsAccount)
 User.hasOne(UserProfile)
+User.hasOne(TwoFactorAuth)
+User.hasOne(SecurityQuestion)
+UserProfile.belongsTo(User)
+AuthRequest.belongsTo(User)
+Balance.hasOne(Asset)
 
-sequelize.sync({force: false})
+sequelize.sync({force: true})
     .then(() => {
         console.log('Database & tables created')
     })
@@ -46,11 +91,25 @@ sequelize.sync({force: false})
 module.exports = {
     User,
     AccountLevel,
-    AccountType,
-    UserAddress,
+    AccountType,    
     Sepomex,
     AuthRequest,
-    UserLocation,
+    Location,
+    Address,
     UserProfile,
+    Document,
+    Transaction,
+    Fees,
+    Balance,
+    CompanyProfile,
+    Asset,
+    PlatformVersion,
+    DeviceFingerprint,
+    Session,
+    TwoFactorAuth,
+    SecurityQuestion,
+    Contact,
+    Card,
+    FundsAccount,
     sequelize
 }

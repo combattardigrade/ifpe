@@ -1,21 +1,16 @@
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('document', {
+    return sequelize.define('location', {
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        name: {
+        lat: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        filePath: {
+        lng: {
             type: DataTypes.STRING,
             allowNull: false
-        },
-        status: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            defaultValue: 'in_review'
         }
     })
 }

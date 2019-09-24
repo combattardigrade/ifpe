@@ -5,11 +5,12 @@ import { Redirect } from 'react-router-dom'
 import Recaptcha from 'react-google-recaptcha'
 // components
 import Loading from '../Loading'
+import { Row, Col, Form, Button, Alert } from 'react-bootstrap'
 
 class AdminLogin extends Component {
     state = {
         loading: true,
-        serverRes: '',        
+        serverRes: '',
     }
 
     recaptchaRef = React.createRef()
@@ -24,12 +25,12 @@ class AdminLogin extends Component {
         e.preventDefault()
         const email = e.target.email.value
         const password = e.target.password.value
-        
+
         const { dispatch, authentication } = this.props
         const csrf = authentication.csrf
 
-        const recaptchaValue = this.recaptchaRef.current.getValue()        
-        
+        const recaptchaValue = this.recaptchaRef.current.getValue()
+
         if (!email || !password || !recaptchaValue) {
             this.setState({ serverRes: 'Ingresa todos los campos requeridos' })
             return
@@ -39,7 +40,7 @@ class AdminLogin extends Component {
             email,
             password,
             _csrf: csrf,
-            'g-recaptcha-response':recaptchaValue
+            'g-recaptcha-response': recaptchaValue
         }
 
         dispatch(handleLogin(params, (res) => {
@@ -52,12 +53,14 @@ class AdminLogin extends Component {
         this.recaptchaRef.current.reset()
     }
 
-    
+    closeAlert = () => {
+        this.setState({ serverRes: '' })
+    }
 
     render() {
         const { serverRes, redirect, loading } = this.state
         const RECAPTCHA_SITE_KEY = process.env.RECAPTCHA_SITE_KEY
-        
+
         if (loading === true) {
             return <Loading />
         }
@@ -67,22 +70,35 @@ class AdminLogin extends Component {
         }
 
         return (
-            <div>
-                <h1>Admin Login</h1>
-                <div>{serverRes}</div>
-                <form method="post" onSubmit={this.handleSubmit}>
-                    <input type="text" name="email" />
-                    <input type="password" name="password" />
-                    <button type="submit" >Login</button>
-                    <Recaptcha
-                        ref={this.recaptchaRef}
-                        sitekey={RECAPTCHA_SITE_KEY}
-                        
-                        
-                    />
-                </form>
-
-            </div>
+            <Row style={{ marginTop: 40 }}>
+                <Col md={{ span: 6, offset: 3 }}>
+                    <h2>Iniciar sesión</h2>
+                    
+                    <Alert show={serverRes != '' ? true : false} onClose={this.closeAlert} variant="danger" dismissible>
+                        {serverRes}
+                    </Alert>
+                    
+                    <Form method="post" onSubmit={this.handleSubmit} style={{marginTop:20}}>
+                        <Form.Group>
+                            <Form.Label>Email</Form.Label>
+                            <Form.Control name="email" type="email" placeholder="Enter email" value={this.state.email} onChange={this.handleEmailChange} />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control name="password" type="password" placeholder="Enter password" value={this.state.password} onChange={this.handlePassChange} />
+                        </Form.Group>
+                        <Form.Group>
+                            <Recaptcha
+                                ref={this.recaptchaRef}
+                                sitekey={RECAPTCHA_SITE_KEY}
+                            />
+                        </Form.Group>
+                        <Button variant="primary" type="submit" size="lg" block>
+                            Entrar
+                        </Button>
+                    </Form>
+                </Col>
+            </Row>
         )
     }
 }

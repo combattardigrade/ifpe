@@ -1,14 +1,14 @@
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('userAddress', {
+    return sequelize.define('twoFactorAuth', {
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        lat: {
+        secret: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        lng: {
+        status: {
             type: DataTypes.STRING,
             allowNull: false
         }

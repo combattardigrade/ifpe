@@ -1,61 +1,77 @@
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('userProfile', {
+    return sequelize.define('deviceFingerprint', {
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        primerNombre: {
+        ipAddress: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        segundoNombre: {
+        ipCountry: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        apellidoPaterno: {
+        ipRegion: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        apellidoMaterno: {
+        ipTimezone: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        gender: {
-            type: DataTypes.STRING,
-            allowNull: true,
-        },
-        dateOfBirth: {
+        ipCity: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        countryOfBirth: {
+        ipLat: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        stateOfBirth: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },        
-        occupation: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },    
-        sourceOfResources: {
+        ipLng: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        curp: {
+        device: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        rfc: {
+        browser: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        nivelRiesgo: {
+        operatingSystem: {
             type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: 'bajo'
+            allowNull: true
+        },
+        vendor: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        screenWidth: {
+            type: DataTypes.STRING,
+            allowNull: true,            
+        },
+        screenHeight: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        viewportWidth: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        viewportHeight: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        userAgent: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        authorized: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
         }
     })
 }

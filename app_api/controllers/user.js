@@ -1,5 +1,5 @@
 const User = require('../models/sequelize').User
-const UserData = require('../models/sequelize').UserData
+const UserProfile = require('../models/sequelize').UserProfile
 const UserAddress = require('../models/sequelize').UserAddress
 const sequelize = require('../models/sequelize').sequelize
 
@@ -48,7 +48,7 @@ module.exports.saveNaturalPersonData = (req, res) => {
 
         // check occupation and source of resources in db
 
-        return UserData.findOrCreate({
+        return UserProfile.findOrCreate({
             where: {
                 userId
             },
@@ -129,7 +129,7 @@ module.exports.saveAddress = (req,res) => {
             },
             transaction: t
         })
-            .spread((userData, created) => {
+            .spread((UserProfile, created) => {
                 if(!created) {
                     sendJSONresponse(res,404,{message: 'Los datos ya han sido ingresados'})
                     return

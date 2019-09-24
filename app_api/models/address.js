@@ -1,46 +1,42 @@
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('companyData', {
-        razonSocial: {
+    return sequelize.define('address', {
+        calle: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        giroMercantil: {
+        ext: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: false
         },
-        fechaConstitucion: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        telefonoContacto: {
+        int: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        rfc: {
+        codigoPostal: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        asentamiento: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        tipoAsentamiento: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        primerNombreRepresentante: {
+        municipio: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        segundoNombreRepresentante: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        apellidoPaternoRepresentante: {
+        estado: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        apellidoMaternoRepresentante: {
+        ciudad: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        curpRepresentante: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        rfcRepresentante: {
+        pais: {
             type: DataTypes.STRING,
             allowNull: false
         }

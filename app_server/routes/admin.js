@@ -23,6 +23,9 @@ router.get('/login', authController.renderLogin)
 router.post('/login', recaptcha.middleware.verify, authController.login)
 router.get('/checkAuth', auth, authController.checkAuth)
 router.get('/checkPrivileges', auth, authController.checkPrivileges)
+router.get('/getUsersByTypeAndLevel', auth, adminController.getUsersByTypeAndLevel)
+router.get('/searchUserByEmail', auth, adminController.searchUserByEmail)
+router.get('/searchUserByFullName', auth, adminController.searchUserByFullName)
 router.get('/*', adminController.renderAdminApp)
 
 module.exports =  router

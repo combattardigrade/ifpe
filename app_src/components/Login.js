@@ -4,6 +4,7 @@ import { setAuthedUser } from '../actions/authedUser'
 import { handleLogin } from '../actions/authentication'
 import { getLoginCSRFToken } from '../utils/api'
 import { Link } from  'react-router-dom'
+import { Form, Button } from 'react-bootstrap'
 
 class Login extends Component {
     // https://www.robinwieruch.de/react-warning-cant-call-setstate-on-an-unmounted-component
@@ -60,13 +61,19 @@ class Login extends Component {
 
     render() {
         return (
-            <div>
-                Logins
-                <input type="text" value={this.state.email} onChange={this.handleEmailChange}></input>
-                <input type="password" value={this.state.password} onChange={this.handlePassChange}></input>    
-                <button onClick={this.handleSubmit}>Login</button>
-                <Link to='/'>test</Link>
-            </div>
+            <Form>
+                <Form.Group>
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control type="email" placeholder="Enter email" value={this.state.email} onChange={this.handleEmailChange} />
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control type="password" placeholder="Enter password" value={this.state.password} onChange={this.handlePassChange} />
+                </Form.Group>
+                <Button variant="primary" onClick={this.handleSubmit}>
+                    Entrar
+                </Button>
+            </Form>
         )
     }
 }

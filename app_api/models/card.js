@@ -1,61 +1,44 @@
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('userProfile', {
+    return sequelize.define('card', {
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        primerNombre: {
+        cardType: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        nameOnCard: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        segundoNombre: {
+        number: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        apellidoPaterno: {
+        expMonth: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        apellidoMaterno: {
+        expYear: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        gender: {
-            type: DataTypes.STRING,
-            allowNull: true,
-        },
-        dateOfBirth: {
-            type: DataTypes.STRING,
+        cvv: {
+            type: DataTypes.INTEGER,
             allowNull: true
         },
-        countryOfBirth: {
+        batch: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        stateOfBirth: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },        
-        occupation: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },    
-        sourceOfResources: {
+        issuer: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        curp: {
+        category: {
             type: DataTypes.STRING,
             allowNull: true
-        },
-        rfc: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        nivelRiesgo: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: 'bajo'
         }
     })
 }

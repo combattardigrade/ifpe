@@ -2,6 +2,7 @@
 const fetch = require('node-fetch')
 const sendJSONresponse = require('../../utils/index').sendJSONresponse
 const API_HOST = process.env.API_HOST
+const rp = require('request-promise')
 
 module.exports.renderAdminApp = function(req,res) {    
    
@@ -13,5 +14,80 @@ module.exports.renderAdminApp = function(req,res) {
     }   
 
     return
+}
+
+module.exports.getUsersByTypeAndLevel = function(req,res) {
+    
+    const accountType = req.query.accountType ? req.query.accountType : 'all'
+    const accountLevel = req.query.accountLevel ? parseInt(req.query.accountLevel) : 0
+    const accountLevelGte = req.query.accountLevelGte ? parseInt(req.query.accountLevelGte) : 0
+    const page = req.query.page ? parseInt(req.query.page) : 1
+    
+    rp({
+        uri: API_HOST + 
+            '/admin/getUsersByTypeAndLevel?accountType=' + 
+            accountType + '&accountLevel=' + accountLevel +
+            '&accountLevelGte=' + accountLevelGte + '&page=' + page,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        json: true
+    })
+        .then((response) => {           
+            sendJSONresponse(res,200,response)
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res,404,err)
+        })
+}
+
+module.exports.searchUserByEmail = function(req,res) {
+    const email = req.query.email
+
+    rp({
+        uri: API_HOST + 
+            '/admin/searchUserByEmail?email=' + email,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        json: true
+    })
+        .then((response) => {           
+            sendJSONresponse(res,200,response)
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res,404,err)
+        })
+}
+
+module.exports.searchUserByFullName = function(req,res) {
+    const primerNombre = req.query.primerNombre
+    const apellidoPaterno = req.query.apellidoPaterno
+    const apellidoMaterno = req.query.apellidoMaterno
+    console.log('test')
+    rp({
+        uri: API_HOST + 
+            '/admin/searchUserByFullName?primerNombre=' + primerNombre
+            + '&apellidoPaterno=' + apellidoPaterno + '&apellidoMaterno=' + apellidoMaterno,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        json: true
+    })
+        .then((response) => {           
+            sendJSONresponse(res,200,response)
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res,404,err)
+        })
 }
 

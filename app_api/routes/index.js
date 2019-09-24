@@ -8,7 +8,9 @@ const auth = jwt({
 const authenticationController = require('../controllers/authentication')
 const phoneController = require('../controllers/phone')
 const locationController = require('../controllers/location')
+const documentController = require('../controllers/document')
 const adminController = require('../controllers/admin')
+
 
 // authentication
 router.post('/signup', authenticationController.signup)
@@ -27,5 +29,11 @@ router.get('/admin/checkPrivileges', auth, adminController.checkPrivileges)
 router.get('/admin/getUsersByTypeAndLevel', auth, adminController.getUsersByTypeAndLevel)
 router.get('/admin/searchUserByEmail', auth, adminController.searchUserByEmail)
 router.get('/admin/searchUserByFullName', auth, adminController.searchUserByFullName)
+
+// documents
+router.get('/document/:documentId', auth, documentController.getDocument)
+router.post('/document', auth, documentController.uploadDocument)
+router.put('/document', auth, documentController.approveDocument)
+router.delete('/document', auth, documentController.disapproveDocument)
 
 module.exports = router

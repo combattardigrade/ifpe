@@ -83,7 +83,7 @@ UserProfile.belongsTo(User)
 AuthRequest.belongsTo(User)
 Balance.hasOne(Asset)
 
-sequelize.sync({force: true})
+sequelize.sync({force: false})
     .then(() => {
         console.log('Database & tables created')
     })

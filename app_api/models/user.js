@@ -46,10 +46,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
             foreignKey: true,            
         },
-        accountLocked: {
-            type: DataTypes.INTEGER,
+        status: {
+            type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: 0
+            defaultValue: 'in_signup'
         }
     })
 

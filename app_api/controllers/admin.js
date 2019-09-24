@@ -6,6 +6,7 @@ const CompanyProfile = require('../models/sequelize').CompanyProfile
 const Document = require('../models/sequelize').Document
 const Fees = require('../models/sequelize').Fees
 const Location = require('../models/sequelize').Location
+const Transaction = require('../models/sequelize').Transaction
 
 const sequelize = require('../models/sequelize').sequelize
 const { Op } = require('sequelize')

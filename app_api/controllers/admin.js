@@ -253,7 +253,10 @@ module.exports.searchUserByEmail = function(req,res) {
         let searchUser = await User.findAll({
             where: {
                 email: {
-                    [Op.like]: '%' + email + '%'
+                    [Op.like]: '%' + email + '%',
+                    accountType: {
+                        [Op.not]: 'admin'
+                    }
                 }
             },
             attributes: ['id', 'email', 'phone', 'countryCode', 'email', 'nationality', 'accountType', 'accountLevel', 'createdAt'],
@@ -309,7 +312,12 @@ module.exports.searchUserByFullName = function(req,res) {
             return
         }
 
-        let searchUser = await User.findAll({      
+        let searchUser = await User.findAll({    
+            where: {
+                accountType: {
+                    [Op.not]: 'admin'
+                }
+            },  
             attributes: ['id', 'email', 'phone', 'countryCode', 'email', 'nationality', 'accountType', 'accountLevel', 'createdAt'],                  
             include: [
                 {

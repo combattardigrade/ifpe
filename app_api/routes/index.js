@@ -32,7 +32,7 @@ router.get('/admin/searchUserByFullName', auth, adminController.searchUserByFull
 router.get('/admin/getClientProfile/:userId', auth, adminController.getClientProfile)
 
 // documents
-router.get('/document/:documentId', auth, documentController.getDocument)
+router.get('/document/:documentHash', documentController.getDocument)
 router.post('/document', auth, documentController.uploadDocument)
 router.put('/document', auth, documentController.approveDocument)
 router.delete('/document', auth, documentController.disapproveDocument)

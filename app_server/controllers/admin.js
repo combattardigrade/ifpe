@@ -112,3 +112,28 @@ module.exports.getClientProfile = function(req,res) {
         })
 }
 
+module.exports.getDocument = function(req,res) {
+    const documentId = parseInt(req.params.documentId)
+    console.log('test')
+    rp({
+        uri: API_HOST + 
+            '/document/' + documentId,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        json: true
+    })
+        .then((response) => {        
+            console.log(response)   
+            res.writeHead(200, { 'Content-Type': 'image/jpeg' })
+            res.end(response, 'binary')
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res,404,err)
+        })
+
+}
+

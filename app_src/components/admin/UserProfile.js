@@ -1,14 +1,16 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
-import { Row, Col, Button, Table, Tabs, Tab } from 'react-bootstrap'
+import { Row, Col, Button, Table, Tabs, Tab, Modal } from 'react-bootstrap'
 import { getClientProfile } from '../../utils/api'
-
+import { Link } from 'react-router-dom'
 import Loading from '../Loading'
 
 class UserProfile extends Component {
     state = {
         loading: true,
-        user: {}
+        user: {},
+        docHash: '',
+        showModal: false
     }
 
     componentDidMount() {
@@ -17,18 +19,22 @@ class UserProfile extends Component {
             .then(res => res.json())
             .then((res) => {
                 console.log(res)
-                this.setState({loading: false, user: res.user})
+                this.setState({ loading: false, user: res.user })
             })
     }
+
+    handleShowDocument(docHash) {
+        this.setState({showModal: true,docHash: docHash})
+    }    
 
     render() {
 
         const { user, loading } = this.state
 
-        if(loading) {
+        if (loading) {
             return <Loading />
         }
-        console.log(user)
+        console.log(user.documents.length)
         return (
             <Fragment>
                 <Row style={{ marginTop: 40 }}>
@@ -115,7 +121,7 @@ class UserProfile extends Component {
                                                 <tr>
                                                     <td>Estado de la cuenta:</td>
                                                     <td>{user.status}</td>
-                                                </tr>                                                
+                                                </tr>
                                                 <tr>
                                                     <td>Email verificado:</td>
                                                     <td>{user.emailVerified == 1 ? 'Sí' : 'No'}</td>
@@ -146,13 +152,31 @@ class UserProfile extends Component {
                                                 <tr>
                                                     <td><b>Documento</b></td>
                                                     <td><b>Estado</b></td>
+                                                    <td><b>Ver documento</b></td>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                </tr>
+                                                {
+                                                    user.documents.length >= 1
+                                                        ?
+                                                        Object.values(user.documents).map((doc) => (
+                                                            <tr key={doc.id}>
+                                                                <td>{doc.name}</td>
+                                                                <td>{doc.status}</td>
+                                                                <td>
+                                                                    <Button onClick={e => {e.preventDefault(); this.handleShowDocument(doc.hash)}}>Ver documento</Button>
+                                                                </td>
+
+                                                            </tr>
+                                                        ))
+
+                                                        :
+                                                        <tr>
+                                                            <td>-</td>
+                                                            <td>-</td>
+                                                        </tr>
+                                                }
+
                                             </tbody>
                                         </Table>
                                     </Col>
@@ -205,12 +229,12 @@ class UserProfile extends Component {
                                         <Table striped bordered hover>
                                             <thead>
                                                 <tr>
-                                                    <td>Balance</td>                                                    
+                                                    <td>Balance</td>
                                                     <td>Volumen mensual actual</td>
                                                     <td>Volumen diario actual</td>
                                                     <td>Volumen diario promedio</td>
                                                     <td>Volumen mensual promedio</td>
-                                                    
+
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -220,8 +244,8 @@ class UserProfile extends Component {
                                                     <td>-</td>
                                                     <td>-</td>
                                                     <td>-</td>
-                                                    
-                                                    
+
+
                                                 </tr>
                                             </tbody>
                                         </Table>
@@ -233,7 +257,7 @@ class UserProfile extends Component {
                 </Row>
 
 
-
+                <MyModal showModal={this.state.showModal} docHash={this.state.docHash} onHide={() => this.setState({showModal: false})} />
 
 
 
@@ -242,6 +266,22 @@ class UserProfile extends Component {
             </Fragment>
         )
     }
+}
+
+function MyModal(props) {
+    return (
+        <Modal onHide={props.onHide} show={props.showModal} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Documento</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <img style={{width:'100%',height:'100%',maxHeight:'80vh'}} src={process.env.API_HOST + "/document/" + props.docHash} />
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={props.onHide}>Close</Button>
+            </Modal.Footer>
+        </Modal>
+    )
 }
 
 function mapStateToProps({ }) {

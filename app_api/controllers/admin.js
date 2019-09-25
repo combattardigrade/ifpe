@@ -403,6 +403,7 @@ module.exports.getClientProfile = function (req, res) {
                 },
                 {
                     model: Document,
+                    attributes:['id','userId','name','hash','status','exp','createdAt']
                 },
                 {
                     model: Transaction

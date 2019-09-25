@@ -1,10 +1,12 @@
 const User = require('../models/sequelize').User
 const Document = require('../models/sequelize').Document
+const sequelize = require('../models/sequelize').sequelize
 
 const sendJSONresponse = require('../../utils/index').sendJSONresponse
 const { Op } = require('sequelize')
 const moment = require('moment')
 const crypto = require('crypto')
+const fs = require('fs')
 
 module.exports.uploadDocument = function (req, res) {
     const userId = req.user.id
@@ -31,6 +33,7 @@ module.exports.uploadDocument = function (req, res) {
 
         let documentBuffer = new Buffer(documentData, 'base64')
         let newName = crypto.randomBytes(16).toString('hex')
+        let hash = crypto.randomBytes(16).toString('hex')
         let filePath = './uploads/documents/' + newName + '.jpeg'
 
         try {
@@ -39,6 +42,7 @@ module.exports.uploadDocument = function (req, res) {
                 Document.create({
                     userId,
                     name: documentName,
+                    hash,
                     filePath: filePath,
                     status: 'in_review'
                 }, { transaction: t })
@@ -68,38 +72,18 @@ module.exports.uploadDocument = function (req, res) {
 
 // Only admins can view documents
 module.exports.getDocument = function (req, res) {
-    const userId = req.user.id
-    const documentId = parseInt(req.params.documentId)
-
-    if (!documentId) {
+    
+    const documentHash = req.params.documentHash
+    
+    if (!documentHash) {
         sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
     }
-
-    if (isNaN(documentId)) {
-        sendJSONresponse(res, 404, { message: 'Ingresa un identificador de documento correcto' })
-        return
-    }
-
+   
     sequelize.transaction(async (t) => {
-        let admin = await User.findOne({
-            where: {
-                id: userId,
-                accountType: 'admin',
-                accountLevel: {
-                    [Op.gte]: 1
-                }
-            },
-            transaction: t
-        })
-
-        if (!admin) {
-            sendJSONresponse(res, 404, { message: 'La cuenta de administrador no existe o no tiene suficientes privilegios para ver el documento' })
-            return
-        }
-
+            
         let document = await Document.findOne({
             where: {
-                id: documentId
+                hash: documentHash
             },
             transaction: t
         })
@@ -109,7 +93,7 @@ module.exports.getDocument = function (req, res) {
             return
         }
 
-        fs.readFile(document.filePath, function (req, res) {
+        fs.readFile(document.filePath, function (err, data) {
             if (err) {
                 sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar obtener el documento' })
                 return

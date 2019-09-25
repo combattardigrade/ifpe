@@ -63,7 +63,7 @@ module.exports.getUsersByTypeAndLevel = function (req, res) {
         return
     }
 
-    
+
 
     sequelize.transaction(async (t) => {
         // check if user is admin
@@ -176,15 +176,15 @@ module.exports.getUsersByTypeAndLevel = function (req, res) {
                 transaction: t
             })
         } else if (accountType !== 'all' && accountLevelGte == 0) {
-            
+
             result = await User.findAndCountAll({
                 where: {
                     accountType,
                     accountLevel,
                 },
                 transaction: t
-            }) 
-            
+            })
+
             pages = Math.ceil(result.count / limit)
             offset = limit * (page - 1)
 
@@ -224,12 +224,12 @@ module.exports.getUsersByTypeAndLevel = function (req, res) {
         })
 }
 
-module.exports.searchUserByEmail = function(req,res) {
+module.exports.searchUserByEmail = function (req, res) {
     const userId = req.user.id
     const email = removeSpanishChars(req.query.email)
 
-    if(!userId || !email) {
-        sendJSONresponse(res,404,{message:'Ingresa todos los campos requeridos'})
+    if (!userId || !email) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
         return
     }
 
@@ -244,9 +244,9 @@ module.exports.searchUserByEmail = function(req,res) {
             },
             transaction: t
         })
-        
-        if(!user) {
-            sendJSONresponse(res,404,{message:'Your account does not exist or does not have enough privileges'})
+
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'Your account does not exist or does not have enough privileges' })
             return
         }
 
@@ -254,9 +254,9 @@ module.exports.searchUserByEmail = function(req,res) {
             where: {
                 email: {
                     [Op.like]: '%' + email + '%',
-                    accountType: {
-                        [Op.not]: 'admin'
-                    }
+                },
+                accountType: {
+                    [Op.not]: 'admin'
                 }
             },
             attributes: ['id', 'email', 'phone', 'countryCode', 'email', 'nationality', 'accountType', 'accountLevel', 'createdAt'],
@@ -264,34 +264,34 @@ module.exports.searchUserByEmail = function(req,res) {
                 {
                     model: UserProfile,
                 }
-            ], 
+            ],
             limite: 10,
             transaction: t
         })
 
-        if(!searchUser) {
-            sendJSONresponse(res,404,{message:'El usuario no fue encontrado'})
+        if (!searchUser) {
+            sendJSONresponse(res, 404, { message: 'El usuario no fue encontrado' })
             return
         }
 
-        sendJSONresponse(res,200,{searchUser})
+        sendJSONresponse(res, 200, { searchUser })
         return
     })
         .catch((err) => {
             console.log(err)
-            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
             return
         })
 }
 
-module.exports.searchUserByFullName = function(req,res) {
+module.exports.searchUserByFullName = function (req, res) {
     const userId = req.user.id
     const primerNombre = removeSpanishChars(req.query.primerNombre)
     const apellidoPaterno = removeSpanishChars(req.query.apellidoPaterno)
     const apellidoMaterno = removeSpanishChars(req.query.apellidoMaterno)
 
-    if(!userId || !primerNombre || !apellidoPaterno || !apellidoMaterno) {
-        sendJSONresponse(res,404,{message:'Ingresa todos los campos requeridos'})
+    if (!userId || !primerNombre || !apellidoPaterno || !apellidoMaterno) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
         return
     }
 
@@ -306,22 +306,22 @@ module.exports.searchUserByFullName = function(req,res) {
             },
             transaction: t
         })
-        
-        if(!user) {
-            sendJSONresponse(res,404,{message:'Your account does not exist or does not have enough privileges'})
+
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'Your account does not exist or does not have enough privileges' })
             return
         }
 
-        let searchUser = await User.findAll({    
+        let searchUser = await User.findAll({
             where: {
                 accountType: {
                     [Op.not]: 'admin'
                 }
-            },  
-            attributes: ['id', 'email', 'phone', 'countryCode', 'email', 'nationality', 'accountType', 'accountLevel', 'createdAt'],                  
+            },
+            attributes: ['id', 'email', 'phone', 'countryCode', 'email', 'nationality', 'accountType', 'accountLevel', 'createdAt'],
             include: [
                 {
-                    model: UserProfile,                    
+                    model: UserProfile,
                     where: {
                         primerNombre: {
                             [Op.like]: '%' + primerNombre + '%'
@@ -334,32 +334,32 @@ module.exports.searchUserByFullName = function(req,res) {
                         }
                     },
                 }
-            ], 
+            ],
             limit: 10,
             transaction: t
         })
 
-        if(!searchUser) {
-            sendJSONresponse(res,404,{message:'El usuario no fue encontrado'})
+        if (!searchUser) {
+            sendJSONresponse(res, 404, { message: 'El usuario no fue encontrado' })
             return
         }
 
-        sendJSONresponse(res,200,{searchUser})
+        sendJSONresponse(res, 200, { searchUser })
         return
     })
         .catch((err) => {
             console.log(err)
-            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
             return
         })
 }
 
-module.exports.getUserProfile = function(req,res) {
+module.exports.getClientProfile = function (req, res) {
     const adminId = req.user.id
     const userId = req.params.userId
 
-    if(!adminId || !userId) {
-        sendJSONresponse(res,404,{message: "Ingresa todos los campos requeridos"});
+    if (!adminId || !userId) {
+        sendJSONresponse(res, 404, { message: "Ingresa todos los campos requeridos" });
         return
     }
 
@@ -368,23 +368,26 @@ module.exports.getUserProfile = function(req,res) {
             where: {
                 id: adminId,
                 accountType: 'admin',
-                accoutLevel: {
+                accountLevel: {
                     [Op.gte]: 1
                 }
             },
             transaction: t
         })
 
-        if(!admin) {
-            sendJSONresponse(res,404,{message:'Your account does not exist or does not have enough privileges'})
+        if (!admin) {
+            sendJSONresponse(res, 404, { message: 'Your account does not exist or does not have enough privileges' })
             return
         }
 
         let user = await User.findOne({
             where: {
                 id: userId,
+                accountType: {
+                    [Op.or]: ['persona_fisica', 'persona_moral']
+                }
             },
-            attributes: ['id', 'email', 'phone', 'countryCode', 'email', 'nationality', 'accountType', 'accountLevel', 'createdAt'],
+            attributes: ['id', 'email', 'phone', 'countryCode', 'email', 'nationality', 'accountType', 'accountLevel', 'emailVerified', 'phoneVerified', 'status', 'createdAt'],
             include: [
                 {
                     model: UserProfile
@@ -399,7 +402,7 @@ module.exports.getUserProfile = function(req,res) {
                     model: Location
                 },
                 {
-                    model: Document,                    
+                    model: Document,
                 },
                 {
                     model: Transaction
@@ -413,10 +416,18 @@ module.exports.getUserProfile = function(req,res) {
 
             ]
         })
+
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'Usuario no encontrado' })
+            return
+        }
+
+        sendJSONresponse(res, 200, { user })
+        return
     })
         .catch((err) => {
             console.log(err)
-            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
             return
         })
 }

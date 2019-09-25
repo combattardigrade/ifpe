@@ -70,11 +70,32 @@ module.exports.searchUserByFullName = function(req,res) {
     const primerNombre = req.query.primerNombre
     const apellidoPaterno = req.query.apellidoPaterno
     const apellidoMaterno = req.query.apellidoMaterno
-    console.log('test')
+    
     rp({
         uri: API_HOST + 
             '/admin/searchUserByFullName?primerNombre=' + primerNombre
             + '&apellidoPaterno=' + apellidoPaterno + '&apellidoMaterno=' + apellidoMaterno,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        json: true
+    })
+        .then((response) => {           
+            sendJSONresponse(res,200,response)
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res,404,err)
+        })
+}
+
+module.exports.getClientProfile = function(req,res) {
+    const userId = req.params.userId
+    rp({
+        uri: API_HOST + 
+            '/admin/getClientProfile/' + userId,
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

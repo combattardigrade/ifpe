@@ -26,6 +26,7 @@ router.get('/checkPrivileges', auth, authController.checkPrivileges)
 router.get('/getUsersByTypeAndLevel', auth, adminController.getUsersByTypeAndLevel)
 router.get('/searchUserByEmail', auth, adminController.searchUserByEmail)
 router.get('/searchUserByFullName', auth, adminController.searchUserByFullName)
+router.get('/getClientProfile/:userId', auth, adminController.getClientProfile)
 router.get('/*', adminController.renderAdminApp)
 
 module.exports =  router

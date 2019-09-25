@@ -1,20 +1,34 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Row, Col, Button, Table, Tabs, Tab } from 'react-bootstrap'
+import { getClientProfile } from '../../utils/api'
+
+import Loading from '../Loading'
 
 class UserProfile extends Component {
     state = {
         loading: true,
+        user: {}
     }
 
     componentDidMount() {
         const { match: { params }, dispatch } = this.props
-
-        // dispatch load userProfile action
-
+        getClientProfile(params.userId)
+            .then(res => res.json())
+            .then((res) => {
+                console.log(res)
+                this.setState({loading: false, user: res.user})
+            })
     }
 
     render() {
+
+        const { user, loading } = this.state
+
+        if(loading) {
+            return <Loading />
+        }
+        console.log(user)
         return (
             <Fragment>
                 <Row style={{ marginTop: 40 }}>
@@ -28,15 +42,15 @@ class UserProfile extends Component {
                                             <tbody>
                                                 <tr>
                                                     <td>Nombre completo</td>
-                                                    <td></td>
+                                                    <td>{user.userProfile.primerNombre + ' ' + user.userProfile.segundoNombre + ' ' + user.userProfile.apellidoPaterno + ' ' + user.userProfile.apellidoMaterno}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Email</td>
-                                                    <td></td>
+                                                    <td>{user.email}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Celular</td>
-                                                    <td></td>
+                                                    <td>{'+' + user.countryCode + ' ' + user.phone}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Domicilio</td>
@@ -45,39 +59,39 @@ class UserProfile extends Component {
 
                                                 <tr>
                                                     <td>Nacionalidad</td>
-                                                    <td></td>
+                                                    <td>{user.nationality}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Género</td>
-                                                    <td></td>
+                                                    <td>{user.userProfile.gender}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Fecha de nacimiento</td>
-                                                    <td></td>
+                                                    <td>{user.userProfile.dateOfBirth}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Estado de nacimiento</td>
-                                                    <td></td>
+                                                    <td>{user.userProfile.stateOfBirth}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Ocupación</td>
-                                                    <td></td>
+                                                    <td>{user.userProfile.occupation}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Origen de los recursos</td>
-                                                    <td></td>
+                                                    <td>{user.sourceOfResources}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>CURP</td>
-                                                    <td></td>
+                                                    <td>{user.userProfile.curp}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>RFC</td>
-                                                    <td></td>
+                                                    <td>{user.userProfile.rfc}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Nivel de riesgo</td>
-                                                    <td></td>
+                                                    <td>{user.userProfile.nivelRiesgo}</td>
                                                 </tr>
                                             </tbody>
                                         </Table>
@@ -92,27 +106,23 @@ class UserProfile extends Component {
                                             <tbody>
                                                 <tr>
                                                     <td>Tipo de cuenta:</td>
-                                                    <td></td>
+                                                    <td>{user.accountType}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Nivel de cuenta:</td>
-                                                    <td></td>
+                                                    <td>{user.accountLevel}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Bloqueos de cuenta:</td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Bloqueos de cuenta:</td>
-                                                    <td></td>
-                                                </tr>
+                                                    <td>Estado de la cuenta:</td>
+                                                    <td>{user.status}</td>
+                                                </tr>                                                
                                                 <tr>
                                                     <td>Email verificado:</td>
-                                                    <td></td>
+                                                    <td>{user.emailVerified == 1 ? 'Sí' : 'No'}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Celular verificado:</td>
-                                                    <td></td>
+                                                    <td>{user.phoneVerified == 1 ? 'Sí' : 'No'}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Localización (GPS) apertura cuenta:</td>
@@ -120,7 +130,7 @@ class UserProfile extends Component {
                                                 </tr>
                                                 <tr>
                                                     <td>Fecha de creación:</td>
-                                                    <td></td>
+                                                    <td>{user.createdAt}</td>
                                                 </tr>
                                             </tbody>
                                         </Table>

@@ -1,5 +1,12 @@
 const API = 'http://localhost:3000/admin/'
 
+export function getClientProfile(userId) {
+    return fetch(API + 'getClientProfile/' + userId, {
+        method: 'GET',
+        credentials: 'include'
+    })
+}
+
 export function searchUserByFullName(params) {
     return fetch(API + 'searchUserByFullName?primerNombre=' + params.primerNombre +
         '&apellidoPaterno=' + params.apellidoPaterno + '&apellidoMaterno=' + params.apellidoMaterno, {

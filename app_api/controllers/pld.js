@@ -1,6 +1,7 @@
 const User = require('../models/sequelize').User
 const PersonaBloqueada = require('../models/sequelize').PersonaBloqueada
 const PersonaSancionada = require('../models/sequelize').PersonaSancionada
+const MatrizRiesgo = require('../models/sequelize').MatrizRiesgo
 
 const sequelize = require('../models/sequelize').sequelize
 const { Op } = require('sequelize')
@@ -17,6 +18,68 @@ module.exports.addBlockedPerson = (req, res) => {
 
     // check if user is admin
 
+}
+
+module.exports.addRiskFactor = (req,res) => {
+    const userId = req.user.id
+    const elemento = req.body.elemento
+    const indicador = req.body.indicador
+    const nivel = req.body.nivel
+    const ponderacion = req.body.ponderacion
+    const descripcion = req.body.descripcions
+    
+    if(!userId || !elemento || !indicador || !nivel || !ponderacion) {
+        sendJSONresponse(res,404,{message: 'Ingresa todos los campos requeridos'})
+        return
+    }
+
+    sequelize.transaction(async (t) => {
+
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 1
+                }
+            }
+        })
+
+        if(!user) {
+            sendJSONresponse(res,404,{message: 'El usuario no existe o no cuenta con los privilegios requeridos'})
+            return
+        }
+
+        return MatrizRiesgo.findOrCreate({
+            where: {
+                elemento,
+                indicador,                
+            },
+            defaults: {
+                elemento,
+                indicador,
+                nivel,                
+                ponderacion,
+                descripcion,
+                
+            },
+            transaction: t
+        })
+            .spread((riskFactor, created) => {
+                if(!created) {
+                    sendJSONresponse(res, 200, {message: 'El factor de riesgo ingresado ya se encuentra registrado'})
+                    return
+                }
+
+                sendJSONresponse(res,200,{riskFactor})
+                return
+            })
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            return
+        })
 }
 
 

@@ -44,5 +44,6 @@ router.post('/pld/searchSanctioned', auth, pldController.findSanctionedPerson)
 router.post('/pld/importPersonasBloqueadasFile', auth, pldController.importPersonasBloqueadasFile)
 router.post('/pld/importPersonasSancionadasFile', auth, pldController.importPersonasSancionadasFile)
 router.post('/pld/importOFACCountries', auth, pldController.importPaisesPersonasSancionadasFile)
+router.post('/pld/riskMatrix', auth, pldController.addRiskFactor)
 
 module.exports = router

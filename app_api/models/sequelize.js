@@ -27,6 +27,7 @@ const PersonaBloqueadaModel = require('./personaBloqueada')
 const PersonaSancionadaModel = require('./personaSancionada')
 const PersonaBoletinadaModel = require('./personaBoletinada')
 const PEPsModel = require('./peps')
+const MatrizRiesgoModel = require('./matrizRiesgo')
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -71,8 +72,9 @@ const PlatformVersion = PlatformVersionModel(sequelize, Sequelize)
 // pld
 const PersonaBloqueada = PersonaBloqueadaModel(sequelize, Sequelize)
 const PersonaSancionada = PersonaSancionadaModel(sequelize, Sequelize)
-const PersonaBoletinada = PersonaSancionadaModel(sequelize, Sequelize)
+const PersonaBoletinada = PersonaBoletinadaModel(sequelize, Sequelize)
 const PEPs = PEPsModel(sequelize, Sequelize)
+const MatrizRiesgo = MatrizRiesgoModel(sequelize, Sequelize)
 
 User.hasOne(CompanyProfile)
 
@@ -128,4 +130,5 @@ module.exports = {
     PersonaSancionada,
     PersonaBoletinada,
     PEPs,
+    MatrizRiesgo,
 }

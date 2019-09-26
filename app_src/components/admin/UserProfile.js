@@ -24,8 +24,8 @@ class UserProfile extends Component {
     }
 
     handleShowDocument(docHash) {
-        this.setState({showModal: true,docHash: docHash})
-    }    
+        this.setState({ showModal: true, docHash: docHash })
+    }
 
     render() {
 
@@ -164,7 +164,7 @@ class UserProfile extends Component {
                                                                 <td>{doc.name}</td>
                                                                 <td>{doc.status}</td>
                                                                 <td>
-                                                                    <Button onClick={e => {e.preventDefault(); this.handleShowDocument(doc.hash)}}>Ver documento</Button>
+                                                                    <Button onClick={e => { e.preventDefault(); this.handleShowDocument(doc.hash) }}>Ver documento</Button>
                                                                 </td>
 
                                                             </tr>
@@ -189,33 +189,57 @@ class UserProfile extends Component {
                                         <Table striped bordered hover>
                                             <thead>
                                                 <tr>
-                                                    <td>#</td>
+                                                    
                                                     <td>TxID</td>
                                                     <td>Tipo</td>
                                                     <td>Metodo</td>
+                                                    <td>Divisa</td>
                                                     <td>Monto</td>
+                                                    <td>Comisión</td>
+                                                    <td>IVA</td>
                                                     <td>Procedencia</td>
                                                     <td>Destino</td>
-                                                    <td>Clave de rastreo</td>
-                                                    <td>Comisión</td>
+                                                    <td>Clave de rastreo</td>                                                    
                                                     <td>Fecha</td>
                                                     <td>Estado</td>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>#</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                </tr>
+                                                {
+                                                    user.transactions.length >= 1
+                                                        ?
+                                                        Object.values(user.transactions).map((tx) => (
+                                                            <tr key={tx.id}>
+                                                                <td>{tx.id}</td>
+                                                                <td>{tx.operation}</td>
+                                                                <td>{tx.method}</td>
+                                                                <td>{tx.currency}</td>                                                                
+                                                                <td>{tx.amount}</td>                                                                
+                                                                <td>{tx.fees}</td>
+                                                                <td>{tx.tax}</td>
+                                                                <td>{tx.fromAccount}</td>
+                                                                <td>{tx.toAccount}</td>
+                                                                <td>{tx.trackingKey}</td>
+                                                                <td>{tx.createdAt}</td>
+                                                                <td>{tx.status}</td>
+                                                            </tr>
+                                                        ))
+                                                        :
+                                                        <tr>
+                                                            <td>#</td>
+                                                            <td>-</td>
+                                                            <td>-</td>
+                                                            <td>-</td>
+                                                            <td>-</td>
+                                                            <td>-</td>
+                                                            <td>-</td>
+                                                            <td>-</td>
+                                                            <td>-</td>
+                                                            <td>-</td>
+                                                            <td>-</td>
+                                                        </tr>
+                                                }
+
                                             </tbody>
                                         </Table>
                                     </Col>
@@ -257,7 +281,7 @@ class UserProfile extends Component {
                 </Row>
 
 
-                <MyModal showModal={this.state.showModal} docHash={this.state.docHash} onHide={() => this.setState({showModal: false})} />
+                <MyModal showModal={this.state.showModal} docHash={this.state.docHash} onHide={() => this.setState({ showModal: false })} />
 
 
 
@@ -275,7 +299,7 @@ function MyModal(props) {
                 <Modal.Title>Documento</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <img style={{width:'100%',height:'100%',maxHeight:'80vh'}} src={process.env.API_HOST + "/document/" + props.docHash} />
+                <img style={{ width: '100%', height: '100%', maxHeight: '80vh' }} src={process.env.API_HOST + "/document/" + props.docHash} />
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={props.onHide}>Close</Button>

@@ -10,7 +10,7 @@ const phoneController = require('../controllers/phone')
 const locationController = require('../controllers/location')
 const documentController = require('../controllers/document')
 const adminController = require('../controllers/admin')
-
+const pldController = require('../controllers/pld')
 
 // authentication
 router.post('/signup', authenticationController.signup)
@@ -36,5 +36,13 @@ router.get('/document/:documentHash', documentController.getDocument)
 router.post('/document', auth, documentController.uploadDocument)
 router.put('/document', auth, documentController.approveDocument)
 router.delete('/document', auth, documentController.disapproveDocument)
+
+// pld
+router.post('/pld/searchBlocked', auth, pldController.findBlockedPerson)
+router.post('/pld/searchSanctioned', auth, pldController.findSanctionedPerson)
+
+router.post('/pld/importPersonasBloqueadasFile', auth, pldController.importPersonasBloqueadasFile)
+router.post('/pld/importPersonasSancionadasFile', auth, pldController.importPersonasSancionadasFile)
+router.post('/pld/importOFACCountries', auth, pldController.importPaisesPersonasSancionadasFile)
 
 module.exports = router

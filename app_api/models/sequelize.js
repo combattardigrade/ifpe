@@ -22,6 +22,12 @@ const ContactModel = require('./contact')
 const CardModel = require('./card')
 const FundsAccountModel = require('./fundsAccount')
 
+// pld
+const PersonaBloqueadaModel = require('./personaBloqueada')
+const PersonaSancionadaModel = require('./personaSancionada')
+const PersonaBoletinadaModel = require('./personaBoletinada')
+const PEPsModel = require('./peps')
+
 const sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USER,
@@ -62,6 +68,11 @@ const AccountLevel = AccountLevelModel(sequelize, Sequelize)
 const AccountType = AccountTypeModel(sequelize, Sequelize)
 const PlatformVersion = PlatformVersionModel(sequelize, Sequelize)
 
+// pld
+const PersonaBloqueada = PersonaBloqueadaModel(sequelize, Sequelize)
+const PersonaSancionada = PersonaSancionadaModel(sequelize, Sequelize)
+const PersonaBoletinada = PersonaSancionadaModel(sequelize, Sequelize)
+const PEPs = PEPsModel(sequelize, Sequelize)
 
 User.hasOne(CompanyProfile)
 
@@ -110,6 +121,11 @@ module.exports = {
     SecurityQuestion,
     Contact,
     Card,
-    FundsAccount,
-    sequelize
+    FundsAccount,    
+    sequelize,
+    // pld
+    PersonaBloqueada,
+    PersonaSancionada,
+    PersonaBoletinada,
+    PEPs,
 }

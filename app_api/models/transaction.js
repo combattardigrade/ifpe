@@ -41,11 +41,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         fromAccount: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             allowNull: true
         },
         toAccount: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             allowNull: true
         },
         txHash: {

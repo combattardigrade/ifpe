@@ -45,5 +45,7 @@ router.post('/pld/importPersonasBloqueadasFile', auth, pldController.importPerso
 router.post('/pld/importPersonasSancionadasFile', auth, pldController.importPersonasSancionadasFile)
 router.post('/pld/importOFACCountries', auth, pldController.importPaisesPersonasSancionadasFile)
 router.post('/pld/riskMatrix', auth, pldController.addRiskFactor)
+router.get('/pld/calculateInitialRisk/:userId', auth,  pldController.calculateInitialRisk)
+
 
 module.exports = router

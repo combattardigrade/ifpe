@@ -1,5 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('address', {
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         calle: {
             type: DataTypes.STRING,
             allowNull: false
@@ -39,6 +43,11 @@ module.exports = (sequelize, DataTypes) => {
         pais: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        status: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'active'
         }
     })
 }

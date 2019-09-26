@@ -28,6 +28,7 @@ const PersonaSancionadaModel = require('./personaSancionada')
 const PersonaBoletinadaModel = require('./personaBoletinada')
 const PEPsModel = require('./peps')
 const MatrizRiesgoModel = require('./matrizRiesgo')
+const RiesgoClienteModel = require('./riesgoCliente')
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -75,6 +76,7 @@ const PersonaSancionada = PersonaSancionadaModel(sequelize, Sequelize)
 const PersonaBoletinada = PersonaBoletinadaModel(sequelize, Sequelize)
 const PEPs = PEPsModel(sequelize, Sequelize)
 const MatrizRiesgo = MatrizRiesgoModel(sequelize, Sequelize)
+const RiesgoCliente = RiesgoClienteModel(sequelize, Sequelize)
 
 User.hasOne(CompanyProfile)
 
@@ -95,6 +97,9 @@ User.hasOne(SecurityQuestion)
 UserProfile.belongsTo(User)
 AuthRequest.belongsTo(User)
 Balance.hasOne(Asset)
+
+// pld
+User.hasMany(RiesgoCliente)
 
 sequelize.sync({force: false})
     .then(() => {
@@ -131,4 +136,5 @@ module.exports = {
     PersonaBoletinada,
     PEPs,
     MatrizRiesgo,
+    RiesgoCliente,
 }

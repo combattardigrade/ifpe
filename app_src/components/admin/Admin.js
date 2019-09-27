@@ -7,6 +7,7 @@ import Users from './Users'
 import UserProfile from './UserProfile'
 import UserSearch from './UserSearch'
 import MyNav from './MyNav'
+import Operations from './Operations'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/custom.css'
 import { Container } from 'react-bootstrap'
@@ -25,7 +26,8 @@ class Admin extends Component {
                     <Route path={`${match.path}/users/:accountType`} component={withAdminAuth(Users)} />
                     <Route path={`${match.path}/user/:userId`} component={withAdminAuth(UserProfile)} />
                     <Route path={`${match.path}/search/user`} component={withAdminAuth(UserSearch)} />
-                    <Route path={`${match.path}/operations/:operationType`} component={withAdminAuth(UserProfile)} />
+                    <Route path={`${match.path}/operations/:operationType`} component={withAdminAuth(Operations)} />
+                    
                 </Container>
             </div>
         )

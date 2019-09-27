@@ -16,6 +16,30 @@ module.exports.renderAdminApp = function(req,res) {
     return
 }
 
+module.exports.getUnusualOperations = function(req,res) {
+    
+    const status = req.params.status ? req.params.status : 'all'    
+    const page = req.params.page ? parseInt(req.params.page) : 1
+    
+    rp({
+        uri: API_HOST + 
+            '/pld/unusualOperations/' + status  + '/' + page,            
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        json: true
+    })
+        .then((response) => {           
+            sendJSONresponse(res,200,response)
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res,404,err)
+        })
+}
+
 module.exports.getUsersByTypeAndLevel = function(req,res) {
     
     const accountType = req.query.accountType ? req.query.accountType : 'all'

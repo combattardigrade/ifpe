@@ -22,6 +22,7 @@ const ContactModel = require('./contact')
 const CardModel = require('./card')
 const FundsAccountModel = require('./fundsAccount')
 
+
 // pld
 const PersonaBloqueadaModel = require('./personaBloqueada')
 const PersonaSancionadaModel = require('./personaSancionada')
@@ -29,6 +30,7 @@ const PersonaBoletinadaModel = require('./personaBoletinada')
 const PEPsModel = require('./peps')
 const MatrizRiesgoModel = require('./matrizRiesgo')
 const RiesgoClienteModel = require('./riesgoCliente')
+const UnusualOperationModel = require('./unusualOperation')
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -77,6 +79,7 @@ const PersonaBoletinada = PersonaBoletinadaModel(sequelize, Sequelize)
 const PEPs = PEPsModel(sequelize, Sequelize)
 const MatrizRiesgo = MatrizRiesgoModel(sequelize, Sequelize)
 const RiesgoCliente = RiesgoClienteModel(sequelize, Sequelize)
+const UnusualOperation = UnusualOperationModel(sequelize, Sequelize)
 
 User.hasOne(CompanyProfile)
 
@@ -92,6 +95,7 @@ User.hasMany(Contact)
 User.hasMany(Card)
 User.hasMany(FundsAccount)
 User.hasOne(UserProfile)
+User.hasOne(CompanyProfile)
 User.hasOne(TwoFactorAuth)
 User.hasOne(SecurityQuestion)
 UserProfile.belongsTo(User)
@@ -100,6 +104,8 @@ Balance.hasOne(Asset)
 
 // pld
 User.hasMany(RiesgoCliente)
+UnusualOperation.belongsTo(User)
+UnusualOperation.belongsTo(RiesgoCliente)
 
 sequelize.sync({force: false})
     .then(() => {
@@ -137,4 +143,5 @@ module.exports = {
     PEPs,
     MatrizRiesgo,
     RiesgoCliente,
+    UnusualOperation,
 }

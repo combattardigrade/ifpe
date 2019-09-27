@@ -15,6 +15,7 @@ class UserProfile extends Component {
 
     componentDidMount() {
         const { match: { params }, dispatch } = this.props
+        
         getClientProfile(params.userId)
             .then(res => res.json())
             .then((res) => {

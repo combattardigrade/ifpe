@@ -4,8 +4,10 @@ const PersonaSancionada = require('../models/sequelize').PersonaSancionada
 const PersonaBoletinada = require('../models/sequelize').PersonaBoletinada
 const MatrizRiesgo = require('../models/sequelize').MatrizRiesgo
 const UserProfile = require('../models/sequelize').UserProfile
+const CompanyProfile = require('../models/sequelize').CompanyProfile
 const RiesgoCliente = require('../models/sequelize').RiesgoCliente
 const Address = require('../models/sequelize').Address
+const UnusualOperation = require('../models/sequelize').UnusualOperation
 
 const sequelize = require('../models/sequelize').sequelize
 const { Op } = require('sequelize')
@@ -262,15 +264,48 @@ module.exports.importPaisesPersonasSancionadasFile = (req, res) => {
     })
 }
 
+// Unusual Operations
+
+module.exports.getUnusualOperations = (req, res) => {
+    const userId = req.user.id
+    const status = req.params.status
+
+    if (!userId || !status) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
+        return
+    }
+
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 2
+                }
+            }
+        })
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
+            return
+        })
+}
+
+
+
 
 // calculate initial risk
-// 1) actividad_economica / profesion
-// 2) tipo_entidad
-// 3) tipologias
+// 1) actividad_economica / profesion - done
+// 2) tipo_entidad 
+// 3) tipologias - done
 // 4) ubicacion geografica - done
 // 5) listas - done
-// 6) origen y destino de los recursos
+// 6) origen y destino de los recursos - done
 // 7) Nacionalidad - done
+
+// edad - done
 
 module.exports.calculateInitialRisk = (req, res) => {
     const adminId = req.user.id
@@ -307,6 +342,9 @@ module.exports.calculateInitialRisk = (req, res) => {
                     model: UserProfile
                 },
                 {
+                    model: CompanyProfile
+                },
+                {
                     model: Address,
                     where: {
                         status: 'active'
@@ -314,7 +352,12 @@ module.exports.calculateInitialRisk = (req, res) => {
                 }
             ]
         })
-        
+
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'El usuario no fue encontrado o el perfil no esta completo' })
+            return
+        }
+
         // accountType
         if (user.accountType === 'persona_fisica') {
             // check if user profile is complete and can be evaluated
@@ -327,6 +370,7 @@ module.exports.calculateInitialRisk = (req, res) => {
             const firstName = user.userProfile.primerNombre
             // if user doesn't have apellido materno
             let lastName
+
             if (!('apellidoMaterno' in user.userProfile) || user.userProfile.apellidoMaterno == 'x') {
                 lastName = user.userProfile.apellidoPaterno
             } else {
@@ -348,16 +392,73 @@ module.exports.calculateInitialRisk = (req, res) => {
             // Check residence address (country, state)
             await checkResidenceAddress(user.addresses[0].pais, user.addresses[0].state, userId)
 
+            // Check Occupation
+            if (user.userProfile.occupation != '') {
+                await checkOccupation(user.userProfile.occupation, userId)
+            }
+
+            // Check Source of Income
+            if (user.userProfile.sourceOfResources != '') {
+                await checkSourceOfIncome(user.userProfile.sourceOfResources, userId)
+            }
+
+            // Check age
+            await checkAge(user.userProfile.dateOfBirth, userId)
+
+
+            // calculate initial risk
+            calculateRisk(userId)
+
+
+
             sendJSONresponse(res, 200, { user })
             return
 
+        } else if (user.accountType === 'persona_moral') {
+            // check if user profile is complete and can be evaluated
+            if (!('companyProfile' in user) || !('addresses' in user)) {
+                sendJSONresponse(res, 404, { message: 'Perfil de usuario incompleto, no es posible calcular el riesgo inicial' })
+                return
+            }
+
+            // Set firstName and lastName
+            const companyName = user.companyProfile.razonSocial
+
+            // Check Sanctioned People List
+            await checkSanctionedPeopleList(null, null, userId, companyName)
+
+            // Check Blocked People List
+            await checkBlockedPeopleList(companyName, userId)
+
+            // Check Reported People List
+            await checkReportedUsersList(companyName, user.email, userId)
+
+            // Check nationality
+            await checkNationality(user.nationality, userId)
+
+            // Check residence address (country, state)
+            await checkResidenceAddress(user.addresses[0].pais, user.addresses[0].state, userId)
+
+            // Check Occupation
+            if (user.companyProfile.giroMercantil != '') {
+                await checkOccupation(user.companyProfile.giroMercantil, userId)
+            }
+
+            // Check Source of Income
+            if (user.companyProfile.origenRecursos != '') {
+                await checkSourceOfIncome(user.companyProfile.origenRecursos, userId)
+            }
+
+            // Check age
+            // await checkAge(user.userProfile.dateOfBirth, userId)
+
+
+            // calculate initial risk
+            calculateRisk(userId)
+
+            sendJSONresponse(res, 200, { user })
+            return
         }
-
-
-
-
-
-
 
     })
         .catch((err) => {
@@ -365,6 +466,114 @@ module.exports.calculateInitialRisk = (req, res) => {
             sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
             return
         })
+}
+
+async function calculateRisk(userId) {
+    // Evaluate risks
+    let riskFactors = await RiesgoCliente.findAll({
+        where: {
+            userId,
+        }
+    })
+
+    let nivelRiesgo = 'bajo'
+
+    if (riskFactors.length > 0) {
+
+        for (let i = 0; i < riskFactors.length; i++) {
+            let risk = riskFactors[i]
+            let tituloAlerta, tipoAlerta
+
+            // set nivelRiesgo
+            if (nivelRiesgo == 'bajo' && risk.nivel != 'bajo') {
+                nivelRiesgo = risk.nivel
+            } else if (nivelRiesgo == 'medio' && (risk.nivel == 'alto' || risk.nivel == 'muy_alto')) {
+                nivelRiesgo = risk.nivel
+            }
+
+            if (risk.elemento == 'listas' || risk.nivel == 'alto') {
+                if (risk.elemento == 'listas') {
+                    tituloAlerta = 'Posible operación inusual por encontrarse en lista de ' + risk.indicador
+                    tipoAlerta = 'alerta_critica'
+                } else if (risk.elemento == 'nacionalidad' && risk.nivel == 'alto') {
+                    tituloAlerta = 'Posible operación inusual por nacionalidad considerada de riesgo'
+                    tipoAlerta = 'alerta'
+                } else if (risk.elemento == 'pais' && risk.nivel == 'alto') {
+                    tituloAlerta = 'Posible operación inusual por país de residencia considerado de riesgo'
+                    tipoAlerta = 'alerta'
+                } else if (risk.elemento == 'estado' && risk.nivel == 'alto') {
+                    tituloAlerta = 'Posible operación inusual por estado considerado de riesgo'
+                    tipoAlerta = 'alerta'
+                } else if (risk.elemento == 'tipologia' && risk.nivel == 'alto') {
+                    tituloAlerta = 'Posible operación inusual por tipología considerada de riesgo alto'
+                    tipoAlerta = 'alerta'
+                } else if (risk.elemento == 'actividad_economica' && risk.nivel == 'alto') {
+                    tituloAlerta = 'Posible operación inusual por actividad económica considerada de riesgo alto'
+                    tipoAlerta = 'alerta'
+                } else if (risk.elemento == 'origen_recursos' && risk.nivel == 'alto') {
+                    tituloAlerta = 'Posible operación inusual por origen de los recursos considerado de riesgo alto'
+                    tipoAlerta = 'alerta'
+                }
+                UnusualOperation.findOrCreate({ where: { userId, tituloAlerta, tipoAlerta, riesgoClienteId: risk.id } })
+            }
+        }
+    }
+
+    // Set risk level 
+    let user = await User.findOne({
+        where: {
+            id: userId
+        },
+        include: [
+            {
+                model: UserProfile
+            },
+            {
+                model: CompanyProfile
+            }
+        ]
+    })
+
+    if (user.accountType == 'persona_fisica') {
+        user.userProfile.nivelRiesgo = nivelRiesgo
+        await user.userProfile.save()
+    } else if (user.accountType == 'persona_moral') {
+        user.companyProfile.nivelRiesgo = nivelRiesgo
+        await user.companyProfile.save()
+    }
+
+    console.log({ message: 'Determinación del nivel de riesgo inicial completada' })
+    return
+}
+
+async function checkAge(dateOfBirth, userId) {
+    dateOfBirth = moment(dateOfBirth, 'DD/MM/YYYY')
+    let years = moment().diff(dateOfBirth, 'years')
+
+    if (years > 25) return
+
+    let matrixSearch = await MatrizRiesgo.findOne({
+        where: {
+            elemento: 'tipologia',
+            indicador: {
+                [Op.like]: 'El cliente es menor de 25 años'
+            }
+        }
+    })
+
+    if (!matrixSearch) return
+
+    await RiesgoCliente.findOrCreate({
+        where: {
+            userId,
+            elemento: 'tipologia',
+            indicador: matrixSearch.indicador,
+            valor: 'Edad: ' + years + ' años',
+            nivel: matrixSearch.nivel,
+            ponderacion: matrixSearch.ponderacion,
+            descripcion: matrixSearch.descripcion
+        }
+    })
 }
 
 async function checkResidenceAddress(country, state, userId) {
@@ -375,16 +584,18 @@ async function checkResidenceAddress(country, state, userId) {
         }
     })
 
-    if(countrySearch) {
+    if (countrySearch) {
         // save risk
-        await RiesgoCliente.create({
-            userId,
-            elemento: 'pais',
-            indicador: countrySearch.indicador,
-            valor: countrySearch.indicador,
-            nivel: countrySearch.nivel,
-            ponderacion: countrySearch.ponderacion,
-            descripcion: countrySearch.descripcion
+        await RiesgoCliente.findOrCreate({
+            where: {
+                userId,
+                elemento: 'pais',
+                indicador: countrySearch.indicador,
+                valor: countrySearch.indicador,
+                nivel: countrySearch.nivel,
+                ponderacion: countrySearch.ponderacion,
+                descripcion: countrySearch.descripcion
+            }
         })
     }
 
@@ -395,15 +606,17 @@ async function checkResidenceAddress(country, state, userId) {
         }
     })
 
-    if(stateSearch) {
-        await RiesgoCliente.create({
-            userId,
-            elemento: 'estado',
-            indicador: stateSearch.indicador,
-            valor: stateSearch.indicador,
-            nivel: stateSearch.nivel,
-            ponderacion: stateSearch.ponderacion,
-            descripcion: stateSearch.descripcion
+    if (stateSearch) {
+        await RiesgoCliente.findOrCreate({
+            where: {
+                userId,
+                elemento: 'estado',
+                indicador: stateSearch.indicador,
+                valor: stateSearch.indicador,
+                nivel: stateSearch.nivel,
+                ponderacion: stateSearch.ponderacion,
+                descripcion: stateSearch.descripcion
+            }
         })
     }
 }
@@ -416,18 +629,20 @@ async function checkNationality(nationality, userId) {
                 indicador: nationality
             }
         })
-        
+
         // es extranjero y de un pais de riesgo
         if (matrix) {
             // save risk
-            await RiesgoCliente.create({
-                userId,
-                elemento: 'nacionalidad',
-                indicador: matrix.indicador,
-                valor: matrix.indicador,
-                nivel: matrix.nivel,
-                ponderacion: matrix.ponderacion,
-                descripcion: matrix.descripcion
+            await RiesgoCliente.findOrCreate({
+                where: {
+                    userId,
+                    elemento: 'nacionalidad',
+                    indicador: matrix.indicador,
+                    valor: matrix.indicador,
+                    nivel: matrix.nivel,
+                    ponderacion: matrix.ponderacion,
+                    descripcion: matrix.descripcion
+                }
             })
         } else {
             matrix = await MatrizRiesgo.findOne({
@@ -437,31 +652,47 @@ async function checkNationality(nationality, userId) {
                 }
             })
             // es extranjero, pero no de un pais de riesgo
-            await RiesgoCliente.create({
-                userId,
-                elemento: 'nacionalidad',
-                indicador: 'extranjero',
-                valor: nationality,
-                nivel: matrix.nivel,
-                ponderacion: matrix.ponderacion,
-                descripcion: matrix.descripcion
+            await RiesgoCliente.findOrCreate({
+                where: {
+                    userId,
+                    elemento: 'nacionalidad',
+                    indicador: 'extranjero',
+                    valor: nationality,
+                    nivel: matrix.nivel,
+                    ponderacion: matrix.ponderacion,
+                    descripcion: matrix.descripcion
+                }
             })
         }
     }
 }
 
 
-async function checkSanctionedPeopleList(firstName, lastName, userId) {
+async function checkSanctionedPeopleList(firstName, lastName, userId, companyName = '') {
 
-    // find in list
-    let results = await PersonaSancionada.findAll({
-        where: {
-            name: {
-                [Op.like]: '%' + lastName + ', ' + firstName + '%'
-            }
-        },
-        limit: 10
-    })
+    let results
+    // personType
+    if (companyName == '') {
+        // find individual in list
+        results = await PersonaSancionada.findAll({
+            where: {
+                name: {
+                    [Op.like]: '%' + lastName + ', ' + firstName + '%'
+                }
+            },
+            limit: 10
+        })
+    } else {
+        // find company in list
+        results = await PersonaSancionada.findAll({
+            where: {
+                name: {
+                    [Op.like]: '%' + companyName + '%'
+                }
+            },
+            limit: 10
+        })
+    }
 
     if (!results) return false
 
@@ -478,14 +709,16 @@ async function checkSanctionedPeopleList(firstName, lastName, userId) {
         })
 
         // save risk
-        await RiesgoCliente.create({
-            userId,
-            elemento: 'listas',
-            indicador: 'personas_sancionadas',
-            valor: JSON.stringify(results),
-            nivel: matrix.nivel,
-            ponderacion: matrix.ponderacion,
-            descripcion: matrix.descripcion
+        await RiesgoCliente.findOrCreate({
+            where: {
+                userId,
+                elemento: 'listas',
+                indicador: 'personas_sancionadas',
+                valor: JSON.stringify(results),
+                nivel: matrix.nivel,
+                ponderacion: matrix.ponderacion,
+                descripcion: matrix.descripcion
+            }
         })
     }
 }
@@ -515,14 +748,16 @@ async function checkBlockedPeopleList(name, userId) {
         })
 
         // save risk
-        await RiesgoCliente.create({
-            userId,
-            elemento: 'listas',
-            indicador: 'personas_bloqueadas',
-            valor: JSON.stringify(results),
-            nivel: matrix.nivel,
-            ponderacion: matrix.ponderacion,
-            descripcion: matrix.descripcion
+        await RiesgoCliente.findOrCreate({
+            where: {
+                userId,
+                elemento: 'listas',
+                indicador: 'personas_bloqueadas',
+                valor: JSON.stringify(results),
+                nivel: matrix.nivel,
+                ponderacion: matrix.ponderacion,
+                descripcion: matrix.descripcion
+            }
         })
     }
 }
@@ -547,7 +782,7 @@ async function checkReportedUsersList(name, email, userId) {
     // if name is found then insert risk
     if (results.length > 0) {
 
-        // search in risk matriz
+        // search in risk matrix
         let matrix = await MatrizRiesgo.findOne({
             where: {
                 elemento: 'listas',
@@ -557,14 +792,169 @@ async function checkReportedUsersList(name, email, userId) {
         })
 
         // save risk
-        await RiesgoCliente.create({
-            userId,
-            elemento: 'listas',
-            indicador: 'personas_boletinadas',
-            valor: JSON.stringify(results),
-            nivel: matrix.nivel,
-            ponderacion: matrix.ponderacion,
-            descripcion: matrix.descripcion
+        await RiesgoCliente.findOrCreate({
+            where: {
+                userId,
+                elemento: 'listas',
+                indicador: 'personas_boletinadas',
+                valor: JSON.stringify(results),
+                nivel: matrix.nivel,
+                ponderacion: matrix.ponderacion,
+                descripcion: matrix.descripcion
+            }
         })
     }
 }
+
+async function checkOccupation(occupation, userId) {
+    // search in risk matrix
+    let matrix = await MatrizRiesgo.findOne({
+        where: {
+            elemento: 'actividad_economica',
+            indicador: {
+                [Op.like]: '%' + occupation + '%'
+            }
+        }
+    })
+
+    if (!matrix) return
+
+    // save risk
+    await RiesgoCliente.findOrCreate({
+        where: {
+            userId,
+            elemento: 'actividad_economica',
+            indicador: matrix.indicador,
+            valor: matrix.indicador,
+            nivel: matrix.nivel,
+            ponderacion: matrix.ponderacion,
+            descripcion: matrix.descripcion
+        }
+    })
+}
+
+async function checkSourceOfIncome(source, userId) {
+    // search in risk matrix
+    let matrix = await MatrizRiesgo.findOne({
+        where: {
+            elemento: 'origen_recursos',
+            indicador: {
+                [Op.like]: '%' + source + '%'
+            }
+        }
+    })
+
+    if (!matrix) return
+
+    // save risk
+    await RiesgoCliente.findOrCreate({
+        where: {
+            userId,
+            elemento: 'origen_recursos',
+            indicador: matrix.indicador,
+            valor: matrix.indicador,
+            nivel: matrix.nivel,
+            ponderacion: matrix.ponderacion,
+            descripcion: matrix.descripcion
+        }
+    })
+}
+
+
+module.exports.getUnusualOperations = (req, res) => {
+    const userId = req.user.id
+    const status = req.params.status ? req.params.status : 'all'
+    const page = req.params.page ? parseInt(req.params.page) : 1
+    let limit = 50
+    let offset = 0
+    let pages
+
+    if (!userId || !status || !page) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
+        return
+    }
+
+    try {
+        User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 1
+                }
+            },            
+        })
+            .then((user) => {
+                if (!user) {
+                    sendJSONresponse(res, 404, { message: 'El administrador no existe o no tiene suficientes privilegios' })
+                    return
+                }
+
+                if (status === 'all') {
+                    UnusualOperation.findAndCountAll()
+                        .then((result) => {
+                            pages = Math.ceil(result.count / limit)
+                            offset = limit * (page - 1)
+                            UnusualOperation.findAll({
+                                include: [
+                                    {
+                                        model: User,
+                                        attributes: ['id','email','phone','countryCode','accountType','nationality',]
+                                    },
+                                    {
+                                        model: RiesgoCliente
+                                    }
+                                ],
+                                limit,
+                                offset
+                            })
+                                .then((operations) => {
+                                    sendJSONresponse(res, 200, { result: operations, count: result.count, pages: pages })
+                                    return
+                                })
+                        })
+                } else {
+                    UnusualOperation.findAndCountAll({
+                        where: {
+                            dictamen: status
+                        }
+                    })
+                        .then((result) => {
+                            pages = Math.ceil(result.count / limit)
+                            offset = limit * (page - 1)
+                            UnusualOperation.findAll({
+                                include: [
+                                    {
+                                        model: User,
+                                        attributes: ['id','email','phone','countryCode','accountType','nationality',]
+                                    },
+                                    {
+                                        model: RiesgoCliente
+                                    }
+                                ],
+                                where: {
+                                    dictamen: status
+                                },
+                                limit,
+                                offset
+                            })
+                                .then((operations) => {
+                                    sendJSONresponse(res, 200, { result: operations, count: result.count, pages: pages })
+                                    return
+                                })
+                        })
+                }
+
+            })
+    }
+    catch(err) {
+        console.log(err)
+        sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+        return
+    }
+}
+
+
+    
+
+

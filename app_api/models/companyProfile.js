@@ -1,16 +1,20 @@
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('companyProfile', {
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         razonSocial: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         giroMercantil: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         fechaConstitucion: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         telefonoContacto: {
             type: DataTypes.STRING,
@@ -22,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         primerNombreRepresentante: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         segundoNombreRepresentante: {
             type: DataTypes.STRING,
@@ -30,19 +34,28 @@ module.exports = (sequelize, DataTypes) => {
         },
         apellidoPaternoRepresentante: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         apellidoMaternoRepresentante: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         curpRepresentante: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         rfcRepresentante: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
+        },
+        origenRecursos: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        nivelRiesgo: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: 'no_asignado'
         }
     })
 }

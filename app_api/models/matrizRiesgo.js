@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         ponderacion: {
             type: DataTypes.INTEGER,
-            allowNull: true
+            allowNull: false
         },
         descripcion: {
             type: DataTypes.STRING,

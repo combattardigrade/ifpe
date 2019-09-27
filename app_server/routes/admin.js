@@ -28,6 +28,10 @@ router.get('/searchUserByEmail', auth, adminController.searchUserByEmail)
 router.get('/searchUserByFullName', auth, adminController.searchUserByFullName)
 router.get('/getClientProfile/:userId', auth, adminController.getClientProfile)
 router.get('/document/:documentId', auth, adminController.getDocument)
+
+// pld
+router.get('/pld/getUnusualOperations/:status/:page', auth, adminController.getUnusualOperations)
+
 router.get('/*', adminController.renderAdminApp)
 
 module.exports =  router

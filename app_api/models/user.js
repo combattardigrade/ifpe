@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
         status: {
             type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: 'in_signup'
+            defaultValue: 'registro_incompleto'
         }
     })
 

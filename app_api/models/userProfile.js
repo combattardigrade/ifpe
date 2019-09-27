@@ -55,7 +55,8 @@ module.exports = (sequelize, DataTypes) => {
         nivelRiesgo: {
             type: DataTypes.STRING,
             allowNull: true,
-            defaultValue: 'bajo'
-        }
+            defaultValue: 'no_asignado'
+        },
+        
     })
 }

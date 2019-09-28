@@ -37,11 +37,17 @@ class MyNav extends Component {
                         </LinkContainer>
                     </NavDropdown>
                     <NavDropdown title="Operaciones" id="collasible-nav-dropdown2" className="dropdown-link">
+                        <LinkContainer to="/admin/operations/inusuales?status=pendiente&page=1">
+                            <NavDropdown.Item>Operaciones inusuales (pendientes)</NavDropdown.Item>
+                        </LinkContainer>
                         <LinkContainer to="/admin/operations/inusuales?status=all&page=1">
-                            <NavDropdown.Item>Operaciones inusuales</NavDropdown.Item>
+                            <NavDropdown.Item>Operaciones inusuales (todas)</NavDropdown.Item>
                         </LinkContainer>
                         <LinkContainer to="/admin/operations/internas_preocupantes=all&page=1">
-                            <NavDropdown.Item>Operaciones internas preocupantes</NavDropdown.Item>
+                            <NavDropdown.Item>Operaciones internas preocupantes (pendientes)</NavDropdown.Item>
+                        </LinkContainer>
+                        <LinkContainer to="/admin/operations/internas_preocupantes=all&page=1">
+                            <NavDropdown.Item>Operaciones internas preocupantes (todas)</NavDropdown.Item>
                         </LinkContainer>
                     </NavDropdown>
                     

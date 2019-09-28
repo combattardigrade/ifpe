@@ -24,7 +24,7 @@ class Users extends Component {
             .then(res => res.json())
             .then(res => {
                 console.log(res)
-                self.setState({count: res.count, pages: res.count, operations: res.result})
+                self.setState({count: res.count, pages: res.pages, operations: res.result, loading: false})
             })
     }
 
@@ -32,7 +32,7 @@ class Users extends Component {
         const { match: { params } } = this.props
         const { loading, operations, count, pages } = this.state
         const query = qs.parse(this.props.location.search)
-
+        console.log(operations)
         return (
             <Row style={{ marginTop: 40 }}>
                 <Col md={{ span: 10, offset: 1 }}>
@@ -46,6 +46,7 @@ class Users extends Component {
                                 <td><b>Tipo Alerta</b></td>
                                 <td><b>Elemento</b></td>
                                 <td><b>Indicador</b></td>
+                                <td><b>Estado</b></td>
                                 <td><b>Nivel</b></td>
                                 <td><b>Descripción</b></td>
                                 <td><b>Fecha de detección</b></td>
@@ -58,19 +59,27 @@ class Users extends Component {
                             {
                                 loading === false
                                     ?
-                                    Object.values(users.users).filter(user => user.accountType !== 'admin').map((user) => (
-                                        <tr key={user.id}>
-                                            <td>{user.id}</td>
-                                            <td>{user.email}</td>
-                                            <td>{user.userProfile.primerNombre}</td>
-                                            <td>{user.accountType}</td>
-                                            <td>{user.accountLevel}</td>
-                                            <td>{user.nationality}</td>
-                                            <td>{user.userProfile.nivelRiesgo}</td>
-                                            <td>{user.createdAt}</td>
+                                    Object.values(operations).map((op) => (
+                                        
+                                        <tr key={op.id}>     
+                                            <td>{op.id}</td>                                       
+                                            <td>{op.tituloAlerta}</td>
+                                            <td>{op.tipoAlerta}</td>
+                                            <td>{op.riesgoCliente.elemento}</td>
+                                            <td>{op.riesgoCliente.indicador}</td>
+                                            <td><b>{op.dictamen}</b></td>
+                                            <td><b>{op.riesgoCliente.nivel}</b></td>
+                                            <td>{op.riesgoCliente.descripcion}</td>
+                                            <td>{op.createdAt}</td>
+                                            <td>{op.user.id}</td>
                                             <td>
-                                                <Link to={"/admin/user/" + user.id}>
+                                                <Link to={"/admin/user/" + op.user.id}>
                                                     <Button>Ver perfil</Button>
+                                                </Link>
+                                            </td>
+                                            <td>
+                                                <Link to={"/admin/user/" + op.user.id}>
+                                                    <Button variant="success">Dictaminar</Button>
                                                 </Link>
                                             </td>
                                         </tr>

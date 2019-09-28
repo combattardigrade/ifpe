@@ -1,6 +1,14 @@
 const API = 'http://localhost:3000/admin/'
 
 // pld
+export function getUnusualOperation(operationId) {
+    const url = API + 'pld/getUnusualOperation/' + operationId
+    return fetch(url, {
+        method: 'GET',
+        credentials: 'include'
+    })
+}
+
 export function getUnusualOperations(params) {
     const status = params.status ? params.status : 'all'
     const page = params.page ? parseInt(params.page) : 1

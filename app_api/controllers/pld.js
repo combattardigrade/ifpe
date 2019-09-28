@@ -955,6 +955,75 @@ module.exports.getUnusualOperations = (req, res) => {
 }
 
 
-    
+module.exports.getUnusualOperation = (req,res) => {
+    const userId = req.user.id
+    const operationId = parseInt(req.params.operationId)
+
+    if(!userId || !operationId || isNaN(operationId)) {
+        sendJSONresponse(res,404,{message: 'Ingresa todos los campos requeridos'})
+        return
+    }
+
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 1
+                }
+            },
+            transaction: t
+        })
+
+        if(!user) {
+            sendJSONresponse(res, 404, {message: 'La cuenta no existe o no tiene suficientes privilegios'})
+            return
+        }
+
+        let unusualOperation = await UnusualOperation.findOne({
+            where: {
+                id: operationId,
+            },
+            include: [
+                {
+                    model: User,
+                    attributes: ['id','email','phone','countryCode','accountType','accountLevel','nationality','status','createdAt'],
+                    include: [
+                        {
+                            model: UserProfile
+                        },
+                        {
+                            model: CompanyProfile
+                        },
+                        {
+                            model: Address,
+                            where: {
+                                status: 'active'
+                            }
+                        }
+                    ]
+                },
+                {
+                    model: RiesgoCliente,                    
+                }
+            ],
+            transaction: t
+        })
+
+        if(!unusualOperation) {
+            sendJSONresponse(res,404,{message:'Unusual Operation not found'})
+            return
+        }
+
+        sendJSONresponse(res,200,{unusualOperation})
+        return
+    })
+        .catch(err => {
+            console.log(err)
+            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            return
+        })
+}
 
 

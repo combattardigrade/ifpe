@@ -31,6 +31,7 @@ router.get('/document/:documentId', auth, adminController.getDocument)
 
 // pld
 router.get('/pld/getUnusualOperations/:status/:page', auth, adminController.getUnusualOperations)
+router.get('/pld/getUnusualOperation/:operationId', auth, adminController.getUnusualOperation)
 
 router.get('/*', adminController.renderAdminApp)
 

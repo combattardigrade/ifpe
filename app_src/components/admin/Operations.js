@@ -32,7 +32,7 @@ class Users extends Component {
         const { match: { params } } = this.props
         const { loading, operations, count, pages } = this.state
         const query = qs.parse(this.props.location.search)
-        console.log(operations)
+        
         return (
             <Row style={{ marginTop: 40 }}>
                 <Col md={{ span: 10, offset: 1 }}>

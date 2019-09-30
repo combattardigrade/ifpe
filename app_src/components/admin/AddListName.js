@@ -12,7 +12,7 @@ class AddListName extends Component {
         loading: true,
         csrf: '',
         serverRes: '',
-        alertError:  true
+        alertError: true
     }
 
     componentDidMount() {
@@ -22,7 +22,7 @@ class AddListName extends Component {
     }
 
     closeAlert = () => {
-        this.setState({serverRes: ''})
+        this.setState({ serverRes: '' })
     }
 
     handleSubmit = (e) => {
@@ -34,8 +34,8 @@ class AddListName extends Component {
         const list = e.target.list.value
         const { csrf } = this.state
 
-        if(!name || !personType || !motive || !country || !list) {
-            this.setState({serverRes: 'Ingresa todos los campos requeridos', alertError: true})
+        if (!name || !personType || !motive || !country || !list) {
+            this.setState({ serverRes: 'Ingresa todos los campos requeridos', alertError: true })
             return
         }
 
@@ -50,10 +50,13 @@ class AddListName extends Component {
             .then(res => res.json())
             .then(res => {
                 console.log(res)
-                if(res.status == 'OK') {
-                    this.setState({serverRes: res.message, alertError: false})
+                if (res.status == 'OK') {
+                    this.setState({ serverRes: res.message, alertError: false })
+                    e.target.name.value = ''                    
+                    e.target.motive.value = ''
+                    e.target.country.value = ''                    
                 } else {
-                    this.setState({serverRes: res.message, alertError: true})
+                    this.setState({ serverRes: res.message, alertError: true })
                 }
             })
     }
@@ -62,14 +65,14 @@ class AddListName extends Component {
 
         const { serverRes, alertError, loading } = this.state
 
-        if(loading) {
-            return <Loading/>
+        if (loading) {
+            return <Loading />
         }
 
         return (
             <Fragment>
                 <Row style={{ marginTop: 40 }}>
-                    <Col sm={{offset:12}} md={{ span: 6, offset: 3 }}>
+                    <Col sm={{ offset: 12 }} md={{ span: 6, offset: 3 }}>
                         <h3>Añadir persona a lista</h3>
                         <MyAlert serverRes={serverRes} error={alertError} closeAlert={this.closeAlert} />
                         <Form onSubmit={this.handleSubmit} style={{ marginTop: 20 }}>

@@ -54,17 +54,20 @@ class MyNav extends Component {
                         <LinkContainer to="/admin/listas/busqueda" exact>
                             <Nav.Link >Búsqueda Manual</Nav.Link>
                         </LinkContainer>
+                        <LinkContainer to="/admin/listas/addName" exact>
+                            <Nav.Link >Añadir Nombre a Lista</Nav.Link>
+                        </LinkContainer>
                         <LinkContainer to="/admin/lista/bloqueadas/1" exact>
-                            <Nav.Link >Personas Bloqueadas</Nav.Link>
+                            <Nav.Link >Ver Personas Bloqueadas</Nav.Link>
                         </LinkContainer>
                         <LinkContainer to="/admin/lista/sancionadas/1" exact>
-                            <Nav.Link >Personas Sancionadas</Nav.Link>
+                            <Nav.Link >Ver Personas Sancionadas</Nav.Link>
                         </LinkContainer>
                         <LinkContainer to="/admin/lista/boletinadas/1" exact>
-                            <Nav.Link >Personas Boletinadas</Nav.Link>
+                            <Nav.Link >Ver Personas Boletinadas</Nav.Link>
                         </LinkContainer>
                         <LinkContainer to="/admin/lista/peps/1" exact>
-                            <Nav.Link >PEPs</Nav.Link>
+                            <Nav.Link > Ver PEPs</Nav.Link>
                         </LinkContainer>
                     </NavDropdown>
                     

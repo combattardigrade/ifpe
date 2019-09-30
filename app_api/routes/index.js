@@ -48,5 +48,5 @@ router.post('/pld/riskMatrix', auth, pldController.addRiskFactor)
 router.get('/pld/calculateInitialRisk/:userId', auth,  pldController.calculateInitialRisk)
 router.get('/pld/unusualOperations/:status/:page', auth, pldController.getUnusualOperations)
 router.get('/pld/unusualOperation/:operationId', auth, pldController.getUnusualOperation)
-
+router.post('/pld/sendUnusualOperationReport', auth, pldController.sendUnusualOperationReport)
 module.exports = router

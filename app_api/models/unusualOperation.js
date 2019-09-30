@@ -12,11 +12,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: false
         },
-        situacion: {
+        analisis: {
             type: DataTypes.TEXT,
             allowNull: true
         },
-        medida: {
+        resultado: {
             type: DataTypes.TEXT,
             allowNull: true,
         },
@@ -25,8 +25,16 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
             defaultValue: 'pendiente'
         },
-        descripcionDictamen: {
+        motivo: {
             type: DataTypes.TEXT,
+            allowNull: true
+        },
+        medidas: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+        oficialCumplimientoId: {
+            type: DataTypes.INTEGER,
             allowNull: true
         },
         riesgoClienteId: {

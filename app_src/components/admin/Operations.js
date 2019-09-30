@@ -78,7 +78,7 @@ class Users extends Component {
                                                 </Link>
                                             </td>
                                             <td>
-                                                <Link to={"/admin/user/" + op.user.id}>
+                                                <Link to={"/admin/operation/" + op.id}>
                                                     <Button variant="success">Dictaminar</Button>
                                                 </Link>
                                             </td>
@@ -104,11 +104,13 @@ class Users extends Component {
                 </Col>
             </Row>
 
-
+                            
 
         )
     }
 }
+
+
 
 function mapStateToProps({ users }) {
     return {

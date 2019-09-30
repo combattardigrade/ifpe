@@ -16,6 +16,28 @@ module.exports.renderAdminApp = function (req, res) {
     return
 }
 
+module.exports.sendUnusualOperationReport = function (req, res) {
+    console.log(req.body)
+    rp({
+        uri: API_HOST + '/pld/sendUnusualOperationReport',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        body: req.body,
+        json: true
+    })
+        .then((response) => {
+            sendJSONresponse(res, 200, response)
+            return
+        })
+        .catch((err) => {
+            console.log(err)            
+            sendJSONresponse(res, 200, {message: err.message})
+        })
+}
+
 module.exports.getUnusualOperation = function (req, res) {
     const operationId = parseInt(req.params.operationId)
 
@@ -30,6 +52,7 @@ module.exports.getUnusualOperation = function (req, res) {
     })
         .then((response) => {
             sendJSONresponse(res, 200, response)
+            return
         })
         .catch((err) => {
             console.log(err)
@@ -159,7 +182,7 @@ module.exports.getClientProfile = function (req, res) {
 
 module.exports.getDocument = function (req, res) {
     const documentId = parseInt(req.params.documentId)
-    console.log('test')
+    
     rp({
         uri: API_HOST +
             '/document/' + documentId,

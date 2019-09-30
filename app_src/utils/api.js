@@ -1,6 +1,26 @@
 const API = 'http://localhost:3000/admin/'
 
 // pld
+export function getCSRFToken() {
+    return fetch(API + 'csrf', {
+        method: 'GET',
+        credentials: 'include'
+    })
+        .then(res => res.json())
+}
+
+export function sendUnusualOperationReport(params) {
+    const url = API + 'pld/sendUnusualOperationReport'
+    return fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(params),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+    })
+}
+
 export function getUnusualOperation(operationId) {
     const url = API + 'pld/getUnusualOperation/' + operationId
     return fetch(url, {

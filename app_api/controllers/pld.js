@@ -882,7 +882,7 @@ module.exports.getUnusualOperations = (req, res) => {
                 accountLevel: {
                     [Op.gte]: 1
                 }
-            },            
+            },
         })
             .then((user) => {
                 if (!user) {
@@ -899,7 +899,7 @@ module.exports.getUnusualOperations = (req, res) => {
                                 include: [
                                     {
                                         model: User,
-                                        attributes: ['id','email','phone','countryCode','accountType','nationality',]
+                                        attributes: ['id', 'email', 'phone', 'countryCode', 'accountType', 'nationality',]
                                     },
                                     {
                                         model: RiesgoCliente
@@ -926,7 +926,7 @@ module.exports.getUnusualOperations = (req, res) => {
                                 include: [
                                     {
                                         model: User,
-                                        attributes: ['id','email','phone','countryCode','accountType','nationality',]
+                                        attributes: ['id', 'email', 'phone', 'countryCode', 'accountType', 'nationality',]
                                     },
                                     {
                                         model: RiesgoCliente
@@ -947,20 +947,20 @@ module.exports.getUnusualOperations = (req, res) => {
 
             })
     }
-    catch(err) {
+    catch (err) {
         console.log(err)
-        sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+        sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
         return
     }
 }
 
 
-module.exports.getUnusualOperation = (req,res) => {
+module.exports.getUnusualOperation = (req, res) => {
     const userId = req.user.id
     const operationId = parseInt(req.params.operationId)
 
-    if(!userId || !operationId || isNaN(operationId)) {
-        sendJSONresponse(res,404,{message: 'Ingresa todos los campos requeridos'})
+    if (!userId || !operationId || isNaN(operationId)) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
         return
     }
 
@@ -976,8 +976,8 @@ module.exports.getUnusualOperation = (req,res) => {
             transaction: t
         })
 
-        if(!user) {
-            sendJSONresponse(res, 404, {message: 'La cuenta no existe o no tiene suficientes privilegios'})
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'La cuenta no existe o no tiene suficientes privilegios' })
             return
         }
 
@@ -988,7 +988,7 @@ module.exports.getUnusualOperation = (req,res) => {
             include: [
                 {
                     model: User,
-                    attributes: ['id','email','phone','countryCode','accountType','accountLevel','nationality','status','createdAt'],
+                    attributes: ['id', 'email', 'phone', 'countryCode', 'accountType', 'accountLevel', 'nationality', 'status', 'createdAt'],
                     include: [
                         {
                             model: UserProfile
@@ -1005,25 +1005,122 @@ module.exports.getUnusualOperation = (req,res) => {
                     ]
                 },
                 {
-                    model: RiesgoCliente,                    
+                    model: RiesgoCliente,
                 }
             ],
             transaction: t
         })
 
-        if(!unusualOperation) {
-            sendJSONresponse(res,404,{message:'Unusual Operation not found'})
+        if (!unusualOperation) {
+            sendJSONresponse(res, 404, { message: 'Unusual Operation not found' })
             return
         }
 
-        sendJSONresponse(res,200,{unusualOperation})
+        sendJSONresponse(res, 200, { unusualOperation })
         return
     })
         .catch(err => {
             console.log(err)
-            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
             return
         })
 }
 
+module.exports.sendUnusualOperationReport = (req, res) => {
+    const userId = req.user.id
+    const operationId = parseInt(req.body.operationId)
+    const dictamen = req.body.dictamen
+    const analisis = req.body.analisis
+    const resultado = req.body.resultado
+    const motivo = req.body.motivo
+    const medidas = req.body.medidas
 
+    if (!userId || !operationId || !dictamen || !analisis || !resultado) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
+        return
+    }
+
+    if (isNaN(operationId)) {
+        sendJSONresponse(res, 404, { message: 'El ID de la operación inusual es inválido' })
+        return
+    }
+
+    if (!(dictamen != 'procedente' || dictamen != 'improcedente')) {
+        sendJSONresponse(res, 404, { message: 'Ingresa un dictamen válido' })
+        return
+    }
+
+
+    sequelize.transaction(async (t) => {
+        // check that user is admin and oficial de cumplimiento (level 2)
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: 2
+            },
+            transaction: t
+        })
+
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'El usuario no existe o no tiene privilegios suficientes' })
+            return
+        }
+
+        // Find unusual operation where dictamen = pendiente
+        // Only allow to submit pending reports, and don't allow
+        // to modify reports that have already been submitted/
+        let unusualOperation = await UnusualOperation.findOne({
+            where: {
+                id: operationId,
+                dictamen: 'pendiente'
+            },
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'email', 'phone', 'countryCode', 'accountType', 'accountLevel', 'nationality', 'status', 'createdAt'],
+                    include: [
+                        {
+                            model: UserProfile
+                        },
+                        {
+                            model: CompanyProfile
+                        },
+                        {
+                            model: Address,
+                            where: {
+                                status: 'active'
+                            }
+                        }
+                    ]
+                },
+                {
+                    model: RiesgoCliente,
+                }
+            ],
+            transaction: t
+        })
+
+        if (!unusualOperation) {
+            sendJSONresponse(res, 200, { message: 'La operación inusual no existe o ya fue dictaminada' })
+            return
+        }
+
+        // update unusual operation report
+        unusualOperation.analisis = analisis
+        unusualOperation.resultado = resultado
+        unusualOperation.dictamen = dictamen
+        unusualOperation.motivo = motivo
+        unusualOperation.medidas = medidas
+        unusualOperation.oficialCumplimientoId = userId
+        await unusualOperation.save({ transaction: t })
+
+        sendJSONresponse(res, 200, unusualOperation)
+        return
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
+            return
+        })
+}

@@ -20,6 +20,7 @@ const authController = require('../controllers/authentication')
 const adminController = require('../controllers/admin')
 
 router.get('/login', authController.renderLogin)
+router.get('/csrf', auth, authController.getCSRFToken)
 router.post('/login', recaptcha.middleware.verify, authController.login)
 router.get('/checkAuth', auth, authController.checkAuth)
 router.get('/checkPrivileges', auth, authController.checkPrivileges)
@@ -32,6 +33,8 @@ router.get('/document/:documentId', auth, adminController.getDocument)
 // pld
 router.get('/pld/getUnusualOperations/:status/:page', auth, adminController.getUnusualOperations)
 router.get('/pld/getUnusualOperation/:operationId', auth, adminController.getUnusualOperation)
+router.post('/pld/sendUnusualOperationReport', auth, adminController.sendUnusualOperationReport)
+
 
 router.get('/*', adminController.renderAdminApp)
 

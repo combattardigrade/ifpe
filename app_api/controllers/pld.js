@@ -88,6 +88,74 @@ module.exports.addRiskFactor = (req, res) => {
         })
 }
 
+module.exports.generalListSearch = (req, res) => {
+    const userId = req.user.id
+    const name = req.body.name
+    
+    if (!userId || !name) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
+        return
+    }
+    
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 1
+                }
+            },
+            transaction: t
+        })
+
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'Your account does not exist or does not have enough privileges' })
+            return
+        }
+
+        let personasBloqueadas = await PersonaBloqueada.findAll({
+            where: {
+                name: {
+                    [Op.like]: '%' + name + '%'
+                }
+            },
+            limit: 10,
+            transaction: t
+        })
+
+        let personasSancionadas = await PersonaSancionada.findAll({
+            where: {
+                name: {
+                    [Op.like]: '%' + name + '%'
+                }
+            },
+            limit: 10,
+            transaction: t
+        })
+
+        let personasBoletinadas = await PersonaBoletinada.findAll({
+            where: {
+                name: {
+                    [Op.like]: '%' + name + '%'
+                }
+            },
+            limit: 10,
+            transaction: t
+        })
+
+        // Add PEPs
+        let peps = []
+        
+        sendJSONresponse(res, 200, { personasBloqueadas, personasSancionadas, personasBoletinadas, peps })
+        return
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
+            return
+        })
+}
 
 module.exports.findBlockedPerson = (req, res) => {
     const userId = req.user.id

@@ -50,7 +50,12 @@ class MyNav extends Component {
                             <NavDropdown.Item>Operaciones internas preocupantes (todas)</NavDropdown.Item>
                         </LinkContainer>
                     </NavDropdown>
-                    
+                    <Nav activeKey={location.pathname + location.search}>
+                        <LinkContainer to="/admin/listas" exact>
+                            <Nav.Link >Búsqueda en listas</Nav.Link>
+                        </LinkContainer>
+                    </Nav>
+
                 </Navbar.Collapse>
             </Navbar>
         )

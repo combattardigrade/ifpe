@@ -34,6 +34,7 @@ router.get('/document/:documentId', auth, adminController.getDocument)
 router.get('/pld/getUnusualOperations/:status/:page', auth, adminController.getUnusualOperations)
 router.get('/pld/getUnusualOperation/:operationId', auth, adminController.getUnusualOperation)
 router.post('/pld/sendUnusualOperationReport', auth, adminController.sendUnusualOperationReport)
+router.post('/pld/generalListSearch', auth, adminController.generalListSearch)
 
 
 router.get('/*', adminController.renderAdminApp)

@@ -16,8 +16,30 @@ module.exports.renderAdminApp = function (req, res) {
     return
 }
 
+module.exports.generalListSearch = function (req, res) {
+    
+    rp({
+        uri: API_HOST + '/pld/generalListSearch',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        body: req.body,
+        json: true
+    })
+        .then((response) => {
+            sendJSONresponse(res, 200, response)
+            return
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 200, { message: err.message })
+        })
+}
+
 module.exports.sendUnusualOperationReport = function (req, res) {
-    console.log(req.body)
+
     rp({
         uri: API_HOST + '/pld/sendUnusualOperationReport',
         method: 'POST',
@@ -33,8 +55,8 @@ module.exports.sendUnusualOperationReport = function (req, res) {
             return
         })
         .catch((err) => {
-            console.log(err)            
-            sendJSONresponse(res, 200, {message: err.message})
+            console.log(err)
+            sendJSONresponse(res, 200, { message: err.message })
         })
 }
 
@@ -182,7 +204,7 @@ module.exports.getClientProfile = function (req, res) {
 
 module.exports.getDocument = function (req, res) {
     const documentId = parseInt(req.params.documentId)
-    
+
     rp({
         uri: API_HOST +
             '/document/' + documentId,

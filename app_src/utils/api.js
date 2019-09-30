@@ -9,6 +9,18 @@ export function getCSRFToken() {
         .then(res => res.json())
 }
 
+export function generalListSearch(params) {    
+    const url = API + 'pld/generalListSearch'
+    return fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(params),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+    })
+}
+
 export function sendUnusualOperationReport(params) {
     const url = API + 'pld/sendUnusualOperationReport'
     return fetch(url, {

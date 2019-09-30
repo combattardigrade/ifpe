@@ -10,6 +10,7 @@ import MyAlert from './MyAlert'
 import { sendUnusualOperationReport, getCSRFToken } from '../../utils/api'
 
 class UnusualOPeration extends Component {
+    
     state = {
         loading: true,
         operation: {},

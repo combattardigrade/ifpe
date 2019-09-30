@@ -16,6 +16,7 @@ class ViewList extends Component {
     }
 
     componentDidMount() {
+        document.title = 'Ver lista completa'
         let self = this
         const { match: { params } } = this.props
 

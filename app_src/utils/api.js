@@ -9,6 +9,18 @@ export function getCSRFToken() {
         .then(res => res.json())
 }
 
+export function addNameToList(params) {
+    const url = API + 'pld/addNameToList'
+    return fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(params),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+    })
+}
+
 export function getListByPage(params) {
     const url = API + 'pld/getListByPage/' + params.list + '/' + params.page
     return fetch(url, {

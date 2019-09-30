@@ -16,10 +16,31 @@ module.exports.renderAdminApp = function (req, res) {
     return
 }
 
+module.exports.addNameToList = function (req, res) {
+    rp({
+        uri: API_HOST + '/pld/addNameToList',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        body: req.body,
+        json: true
+    })
+        .then((response) => {
+            sendJSONresponse(res, 200, response)
+            return
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 200, { message: err.message })
+        })
+}
+
 module.exports.getListByPage = function (req, res) {
     const list = req.params.list
     const page = req.params.page
-    
+
     rp({
         uri: API_HOST + '/pld/getListByPage/' + list + '/' + page,
         method: 'GET',
@@ -40,7 +61,6 @@ module.exports.getListByPage = function (req, res) {
 }
 
 module.exports.generalListSearch = function (req, res) {
-
     rp({
         uri: API_HOST + '/pld/generalListSearch',
         method: 'POST',

@@ -88,6 +88,110 @@ module.exports.addRiskFactor = (req, res) => {
         })
 }
 
+module.exports.addNameToList = (req, res) => {
+    const userId = req.user.id
+    const name = req.body.name
+    const personType = req.body.personType
+    const motive = req.body.motive
+    const country = req.body.country
+    const list = req.body.list
+
+    if (!userId || !name || !personType || !motive || !list) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
+        return
+    }
+
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 2
+                }
+            }
+        })
+
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'El usuario no existe o no tiene suficientes privilegios' })
+            return
+        }
+
+        // select list
+        if (list == 'bloqueadas') {
+            return PersonaBloqueada.findOrCreate({
+                where: {
+                    name: name
+                },
+                defaults: {
+                    name,
+                    personType,
+                    motive,
+                    country
+                },
+                transaction: t
+            })
+                .spread((p, created) => {
+                    if (!created) {
+                        sendJSONresponse(res, 200, { message: 'La persona ya existe en la lista', status: 'ERROR' })
+                        return
+                    }
+                    sendJSONresponse(res, 200, { message: 'Persona añadida a la lista correctamente', status: 'OK' })
+                    return
+                })
+        } else if (list == 'sancionadas') {
+            return PersonaSancionada.findOrCreate({
+                where: {
+                    name: name
+                },
+                defaults: {
+                    name,
+                    personType,
+                    motive,
+                    country
+                },
+                transaction: t
+            })
+                .spread((p, created) => {
+                    if (!created) {
+                        sendJSONresponse(res, 200, { message: 'La persona ya existe en la lista', status: 'ERROR' })
+                        return
+                    }
+                    sendJSONresponse(res, 200, { message: 'Persona añadida a la lista correctamente', status: 'OK' })
+                    return
+                })
+        } else if (list == 'boletinadas') {
+            return PersonaBoletinada.findOrCreate({
+                where: {
+                    name: name
+                },
+                defaults: {
+                    name,
+                    personType,
+                    motive,
+                    country
+                },
+                transaction: t
+            })
+                .spread((p, created) => {
+                    if (!created) {
+                        sendJSONresponse(res, 200, { message: 'La persona ya existe en la lista', status: 'ERROR' })
+                        return
+                    }
+                    sendJSONresponse(res, 200, { message: 'Persona añadida a la lista correctamente', status: 'OK' })
+                    return
+                })
+        } else if (list == 'peps') {
+            // To Do
+        }
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
+            return
+        })
+}
+
 module.exports.getListByPage = (req, res) => {
     const userId = req.user.id
     const list = req.params.list
@@ -118,7 +222,7 @@ module.exports.getListByPage = (req, res) => {
         }
 
         let result
-        if(list === 'bloqueadas') {
+        if (list === 'bloqueadas') {
             result = await PersonaBloqueada.findAndCountAll({
                 transaction: t
             })
@@ -139,7 +243,7 @@ module.exports.getListByPage = (req, res) => {
         pages = Math.ceil(result.count / limit)
         offset = limit * (page - 1)
 
-        if(list === 'bloqueadas') {
+        if (list === 'bloqueadas') {
             personas = await PersonaBloqueada.findAll({
                 limit,
                 offset,
@@ -167,7 +271,7 @@ module.exports.getListByPage = (req, res) => {
             })
         }
 
-        sendJSONresponse(res, 200, {result: personas, count: result.count, pages: pages})
+        sendJSONresponse(res, 200, { result: personas, count: result.count, pages: pages })
         return
 
     })

@@ -88,15 +88,105 @@ module.exports.addRiskFactor = (req, res) => {
         })
 }
 
+module.exports.getListByPage = (req, res) => {
+    const userId = req.user.id
+    const list = req.params.list
+    const page = req.params.page ? parseInt(req.params.page) : 1
+    const limit = 50
+    let offset = 0
+    let pages, personas
+
+    if (!userId || !list || isNaN(page)) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
+        return
+    }
+
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 1
+                }
+            }
+        })
+
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'El usuario no existe o no tiene suficientes privilegios' })
+            return
+        }
+
+        let result
+        if(list === 'bloqueadas') {
+            result = await PersonaBloqueada.findAndCountAll({
+                transaction: t
+            })
+        } else if (list === 'sancionadas') {
+            result = await PersonaSancionada.findAndCountAll({
+                transaction: t
+            })
+        } else if (list === 'boletinadas') {
+            result = await PersonaBoletinada.findAndCountAll({
+                transaction: t
+            })
+        } else if (list === 'peps') {
+            result = await PersonaBoletinada.findAndCountAll({
+                transaction: t
+            })
+        }
+
+        pages = Math.ceil(result.count / limit)
+        offset = limit * (page - 1)
+
+        if(list === 'bloqueadas') {
+            personas = await PersonaBloqueada.findAll({
+                limit,
+                offset,
+                transaction: t
+            })
+        } else if (list === 'sancionadas') {
+            personas = await PersonaSancionada.findAll({
+                limit,
+                offset,
+                transaction: t
+            })
+        } else if (list === 'boletinadas') {
+            personas = await PersonaBoletinada.findAll({
+                limit,
+                offset,
+                transaction: t
+            })
+        } else if (list === 'peps') {
+            // TO DO:
+            // Add PEPs List
+            personas = await PersonaBoletinada.findAll({
+                limit,
+                offset,
+                transaction: t
+            })
+        }
+
+        sendJSONresponse(res, 200, {result: personas, count: result.count, pages: pages})
+        return
+
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
+            return
+        })
+}
+
 module.exports.generalListSearch = (req, res) => {
     const userId = req.user.id
     const name = req.body.name
-    
+
     if (!userId || !name) {
         sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
         return
     }
-    
+
     sequelize.transaction(async (t) => {
         let user = await User.findOne({
             where: {
@@ -146,7 +236,7 @@ module.exports.generalListSearch = (req, res) => {
 
         // Add PEPs
         let peps = []
-        
+
         sendJSONresponse(res, 200, { personasBloqueadas, personasSancionadas, personasBoletinadas, peps })
         return
     })

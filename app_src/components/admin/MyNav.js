@@ -50,11 +50,24 @@ class MyNav extends Component {
                             <NavDropdown.Item>Operaciones internas preocupantes (todas)</NavDropdown.Item>
                         </LinkContainer>
                     </NavDropdown>
-                    <Nav activeKey={location.pathname + location.search}>
-                        <LinkContainer to="/admin/listas" exact>
-                            <Nav.Link >Búsqueda en listas</Nav.Link>
+                    <NavDropdown title="Listas" id="collasible-nav-dropdown2" className="dropdown-link">
+                        <LinkContainer to="/admin/listas/busqueda" exact>
+                            <Nav.Link >Búsqueda Manual</Nav.Link>
                         </LinkContainer>
-                    </Nav>
+                        <LinkContainer to="/admin/lista/bloqueadas/1" exact>
+                            <Nav.Link >Personas Bloqueadas</Nav.Link>
+                        </LinkContainer>
+                        <LinkContainer to="/admin/lista/sancionadas/1" exact>
+                            <Nav.Link >Personas Sancionadas</Nav.Link>
+                        </LinkContainer>
+                        <LinkContainer to="/admin/lista/boletinadas/1" exact>
+                            <Nav.Link >Personas Boletinadas</Nav.Link>
+                        </LinkContainer>
+                        <LinkContainer to="/admin/lista/peps/1" exact>
+                            <Nav.Link >PEPs</Nav.Link>
+                        </LinkContainer>
+                    </NavDropdown>
+                    
 
                 </Navbar.Collapse>
             </Navbar>

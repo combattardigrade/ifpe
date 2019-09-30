@@ -10,6 +10,7 @@ import MyNav from './MyNav'
 import Operations from './Operations'
 import UnusualOperation from './UnusualOperation'
 import ListSearch from './ListSearch'
+import ViewList from './ViewList'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/custom.css'
 import { Container } from 'react-bootstrap'
@@ -30,7 +31,9 @@ class Admin extends Component {
                     <Route path={`${match.path}/search/user`} component={withAdminAuth(UserSearch)} />
                     <Route path={`${match.path}/operations/:operationType`} component={withAdminAuth(Operations)} />
                     <Route path={`${match.path}/operation/:operationId`} component={withAdminAuth(UnusualOperation)} />
-                    <Route path={`${match.path}/listas`} component={withAdminAuth(ListSearch)} />                
+                    <Route path={`${match.path}/listas/busqueda`} component={withAdminAuth(ListSearch)} />                
+                    <Route path={`${match.path}/lista/:list/:page`} component={withAdminAuth(ViewList)} />                
+
                 </Container>
             </div>
         )

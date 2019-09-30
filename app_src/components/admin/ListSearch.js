@@ -56,6 +56,7 @@ class ListSearch extends Component {
                                 <tr>
                                     <td>ID</td>
                                     <td>Nombre</td>
+                                    <td>Tipo Persona</td>
                                     <td>País</td>
                                     <td>Motivo</td>
                                     <td>Lista</td>
@@ -73,6 +74,7 @@ class ListSearch extends Component {
                                                 return (<tr key={result.id}>
                                                     <td>{result.id}</td>
                                                     <td>{result.name}</td>
+                                                    <td>{result.personType}</td>
                                                     <td>{result.country}</td>
                                                     <td>{result.motive}</td>
                                                     <td>Personas Bloqueadas</td>
@@ -92,6 +94,7 @@ class ListSearch extends Component {
                                                 return (<tr key={result.id}>
                                                     <td>{result.id}</td>
                                                     <td>{result.name}</td>
+                                                    <td>{result.personType}</td>
                                                     <td>{result.country}</td>
                                                     <td>{result.motive}</td>
                                                     <td>Personas Sancionadas (OFAC)</td>
@@ -111,6 +114,7 @@ class ListSearch extends Component {
                                                 return (<tr key={result.id}>
                                                     <td>{result.id}</td>
                                                     <td>{result.name}</td>
+                                                    <td>{result.personType}</td>
                                                     <td>{result.country}</td>
                                                     <td>{result.motive}</td>
                                                     <td>Personas Boletinadas</td>
@@ -130,6 +134,7 @@ class ListSearch extends Component {
                                                 return (<tr key={result.id}>
                                                     <td>{result.id}</td>
                                                     <td>{result.name}</td>
+                                                    <td>{result.personType}</td>
                                                     <td>{result.country}</td>
                                                     <td>{result.motive}</td>
                                                     <td>Personas Boletinadas</td>

@@ -16,8 +16,31 @@ module.exports.renderAdminApp = function (req, res) {
     return
 }
 
-module.exports.generalListSearch = function (req, res) {
+module.exports.getListByPage = function (req, res) {
+    const list = req.params.list
+    const page = req.params.page
     
+    rp({
+        uri: API_HOST + '/pld/getListByPage/' + list + '/' + page,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        json: true
+    })
+        .then((response) => {
+            sendJSONresponse(res, 200, response)
+            return
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 404, err)
+        })
+}
+
+module.exports.generalListSearch = function (req, res) {
+
     rp({
         uri: API_HOST + '/pld/generalListSearch',
         method: 'POST',

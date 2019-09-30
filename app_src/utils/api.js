@@ -9,6 +9,14 @@ export function getCSRFToken() {
         .then(res => res.json())
 }
 
+export function getListByPage(params) {
+    const url = API + 'pld/getListByPage/' + params.list + '/' + params.page
+    return fetch(url, {
+        method: 'GET',
+        credentials: 'include'
+    })
+}
+
 export function generalListSearch(params) {    
     const url = API + 'pld/generalListSearch'
     return fetch(url, {

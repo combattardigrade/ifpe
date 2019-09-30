@@ -41,7 +41,7 @@ router.delete('/document', auth, documentController.disapproveDocument)
 router.post('/pld/searchBlocked', auth, pldController.findBlockedPerson)
 router.post('/pld/searchSanctioned', auth, pldController.findSanctionedPerson)
 router.post('/pld/generalListSearch', auth, pldController.generalListSearch)
-
+router.get('/pld/getListByPage/:list/:page', auth, pldController.getListByPage)
 router.post('/pld/importPersonasBloqueadasFile', auth, pldController.importPersonasBloqueadasFile)
 router.post('/pld/importPersonasSancionadasFile', auth, pldController.importPersonasSancionadasFile)
 router.post('/pld/importOFACCountries', auth, pldController.importPaisesPersonasSancionadasFile)

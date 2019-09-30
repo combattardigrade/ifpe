@@ -239,22 +239,47 @@ class UnusualOPeration extends Component {
                         </Table>
                     </Col>
                 </Row>
+                {
+                    operation.dictamen != 'pendiente'
+                        ?
+                        <Row style={{ marginTop: 20 }}>
+                            <Col sm={{ span: 12 }} md={{ span: 5, offset: 1 }}>
+                                <h3>Datos del reporte</h3>
+                                <Table striped bordered hover style={{ marginTop: 10 }}>
+                                    <thead>
+                                        <tr>
+                                            <td>Campo</td>
+                                            <td>Valor</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Dictaminado como</td>
+                                            <td>{operation.dictamen}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Análisis realizado</td>
+                                            <td>{operation.analisis}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Resultado del análisis realizado</td>
+                                            <td>{operation.resultado}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Motivo del reporte (cuando sí se reporta)</td>
+                                            <td>{operation.motivo}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Medidas (cuando sí se reporta)</td>
+                                            <td>{operation.medidas}</td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                            </Col>
+                        </Row>
+                        : null
+                }
 
-                <Row style={{marginTop:20}}>
-                    <Col sm={{ span: 12 }} md={{ span: 5, offset: 1 }}>
-                        <h3>Datos del reporte</h3>
-                        <Table striped bordered hover style={{ marginTop: 10 }}>
-                            <thead>
-                                <tr>
-                                    <td></td>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row>
 
                 <MyModal
                     showModal={this.state.showModal}
@@ -286,8 +311,8 @@ function MyModal(props) {
                             <Form.Group  >
                                 <Form.Label>Dictamen:</Form.Label>
                                 <Form.Control name="dictamen" as="select" defaultValue="improcedente" onChange={props.handleOpinionChange}>
-                                    <option value="procedente">Reportar como operación  inusual</option>
                                     <option value="improcedente">No reportar como operación inusual</option>
+                                    <option value="procedente">Reportar como operación  inusual</option>                                    
                                 </Form.Control>
                                 <Form.Group style={{ marginTop: 10 }} >
                                     <Form.Label>Análisis realizado:</Form.Label>

@@ -51,5 +51,7 @@ router.get('/pld/unusualOperations/:status/:page', auth, pldController.getUnusua
 router.get('/pld/unusualOperation/:operationId', auth, pldController.getUnusualOperation)
 router.post('/pld/sendUnusualOperationReport', auth, pldController.sendUnusualOperationReport)
 router.post('/pld/addNameToList', auth, pldController.addNameToList)
+router.get('/pld/getRiskFactors/:elemento/:page', auth, pldController.getRiskFactors)
+router.put('/pld/editRiskFactor', auth, pldController.editRiskFactor)
 
 module.exports = router

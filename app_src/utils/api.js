@@ -9,6 +9,27 @@ export function getCSRFToken() {
         .then(res => res.json())
 }
 
+export function editRiskFactor(params) {
+    const url = API + 'pld/editRiskFactor'
+    return fetch(url, {
+        method: 'PUT',
+        body: JSON.stringify(params),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+    })
+}
+
+export function getRiskFactors(params) {
+    const url = API + 'pld/getRiskFactors/' + params.elemento
+        + '/' + params.page
+    return fetch(url, {
+        method: 'GET',
+        credentials: 'include'
+    })
+}
+
 export function addNameToList(params) {
     const url = API + 'pld/addNameToList'
     return fetch(url, {
@@ -29,7 +50,7 @@ export function getListByPage(params) {
     })
 }
 
-export function generalListSearch(params) {    
+export function generalListSearch(params) {
     const url = API + 'pld/generalListSearch'
     return fetch(url, {
         method: 'POST',
@@ -100,7 +121,7 @@ export function getUsersByTypeAndLevel(params) {
     const accountLevel = params.accountLevel ? parseInt(params.accountLevel) : 0
     const accountLevelGte = params.accountLevelGte ? parseInt(params.accountLevelGte) : 0
     const page = params.page ? parseInt(params.page) : 1
-    
+
     const url = API + 'getUsersByTypeAndLevel?accountType=' +
         accountType + '&accountLevel=' + accountLevel +
         '&accountLevelGte=' + accountLevelGte + '&page=' + page
@@ -122,7 +143,7 @@ export function checkToken() {
         method: 'GET',
         credentials: 'include'
     })
-        //.then(res => res.json())
+    //.then(res => res.json())
 }
 
 export function getLoginCSRFToken() {
@@ -133,7 +154,7 @@ export function getLoginCSRFToken() {
         .then(res => res.json())
 }
 
-export function login(params) {  
+export function login(params) {
     return fetch(API + 'login', {
         method: 'post',
         body: JSON.stringify(params),
@@ -141,10 +162,10 @@ export function login(params) {
             'Content-Type': 'application/json'
         },
         credentials: 'include'
-    }) 
+    })
         .then(response => response.json())
-        
-              
+
+
 }
 
 

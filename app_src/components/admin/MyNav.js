@@ -70,7 +70,14 @@ class MyNav extends Component {
                             <Nav.Link > Ver PEPs</Nav.Link>
                         </LinkContainer>
                     </NavDropdown>
-                    
+                    <NavDropdown title="Matriz de Riesgo" id="collasible-nav-dropdown2" className="dropdown-link">
+                        <LinkContainer to="/admin/matrizRiesgo/all/1" exact>
+                            <Nav.Link >Ver Factores de riesgo</Nav.Link>
+                        </LinkContainer>
+                        <LinkContainer to="/admin/matrizRiesgo/agregar" exact>
+                            <Nav.Link >Agregar Factor de Riesgo</Nav.Link>
+                        </LinkContainer>                        
+                    </NavDropdown>
 
                 </Navbar.Collapse>
             </Navbar>

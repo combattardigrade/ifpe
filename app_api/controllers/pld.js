@@ -15,15 +15,69 @@ const moment = require('moment')
 const sendJSONresponse = require('../../utils/index').sendJSONresponse
 
 
-// Lista de Personas Bloqueadas
-module.exports.addBlockedPerson = (req, res) => {
+module.exports.editRiskFactor = (req, res) => {
     const userId = req.user.id
-    const name = req.body.name
+    const riskFactorId = parseInt(req.body.riskFactorId)
+    const indicador = req.body.indicador
+    const nivel = req.body.nivel
+    const descripcion = req.body.descripcion
+    let ponderacion
 
+    if (!userId || !riskFactorId || !indicador || !nivel || !descripcion) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
+        return
+    }
 
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 2
+                },
+            },
+            transaction: t
+        })
 
-    // check if user is admin
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'El usuario no existe o no tiene privilegios suficientes' })
+            return
+        }
 
+        let riskFactor = await MatrizRiesgo.findOne({
+            where: {
+                id: riskFactorId
+            },
+            transaction: t
+        })
+
+        if (!riskFactor) {
+            sendJSONresponse(res, 404, { message: 'El factor de riesgo no existe' })
+            return
+        }
+
+        if(nivel == 'bajo')
+            ponderacion = 1
+        else if (nivel == 'medio')
+            ponderacion = 2
+        else if (nivel == 'alto')
+            ponderacion = 3
+                
+        riskFactor.indicador = indicador
+        riskFactor.nivel = nivel
+        riskFactor.ponderacion = ponderacion
+        riskFactor.descripcion = descripcion
+        await riskFactor.save({ transaction: t })
+
+        sendJSONresponse(res, 200, riskFactor)
+        return
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
+            return
+        })
 }
 
 module.exports.addRiskFactor = (req, res) => {
@@ -86,6 +140,76 @@ module.exports.addRiskFactor = (req, res) => {
             sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
             return
         })
+}
+
+module.exports.getRiskFactors = (req, res) => {
+    const userId = req.user.id
+    const elemento = req.params.elemento ? req.params.elemento : 'all'
+    const page = req.params.page ? parseInt(req.params.page) : 1
+    const limit = 50
+    let offset = 0
+    let pages, result, riskFactors
+
+    if (!userId || !elemento || !page) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
+        return
+    }
+    console.log('test')
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 2
+                }
+            },
+            transaction: t
+        })
+
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'El usuario no existe o no tiene suficientes privilegios' })
+            return
+        }
+
+        if (elemento == 'all') {
+            result = await MatrizRiesgo.findAndCountAll({
+                where: {
+                    estado: 'activo'
+                },
+                transaction: t
+            })
+            pages = Math.ceil(result.count / limit)
+            offset = limit * (page - 1)
+            riskFactors = await MatrizRiesgo.findAll({ where: { estado: 'activo' }, transaction: t })
+        } else {
+            result = await MatrizRiesgo.findAndCountAll({
+                where: {
+                    elemento,
+                    estado: 'activo'
+                },
+                transaction: t
+            })
+            pages = Math.ceil(result.count / limit)
+            offset = limit * (page - 1)
+            riskFactors = await MatrizRiesgo.findAll({
+                where: {
+                    elemento,
+                    estado: 'activo'
+                },
+                transaction: t
+            })
+        }
+
+        sendJSONresponse(res, 200, { result: riskFactors, count: result.count, pages: pages })
+        return
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
+            return
+        })
+
 }
 
 module.exports.addNameToList = (req, res) => {

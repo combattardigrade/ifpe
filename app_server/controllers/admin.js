@@ -16,6 +16,50 @@ module.exports.renderAdminApp = function (req, res) {
     return
 }
 
+module.exports.editRiskFactor = function (req, res) {
+    
+    rp({
+        uri: API_HOST + '/pld/editRiskFactor',
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        body: req.body,
+        json: true
+    })
+        .then((response) => {
+            sendJSONresponse(res, 200, response)
+            return
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 200, { message: err.message })
+        })
+}
+
+module.exports.getRiskFactors = function (req, res) {
+    const elemento = req.params.elemento ? req.params.elemento : 'all'
+    const page = req.params.page ? parseInt(req.params.page) : 1
+
+    rp({
+        uri: API_HOST + '/pld/getRiskFactors/' + elemento + '/' + page,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        json: true
+    })
+        .then((response) => {
+            sendJSONresponse(res, 200, response)
+            return
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 200, { message: err.message })
+        })
+}
+
 module.exports.addNameToList = function (req, res) {
     rp({
         uri: API_HOST + '/pld/addNameToList',

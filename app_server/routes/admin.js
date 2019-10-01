@@ -37,6 +37,8 @@ router.post('/pld/sendUnusualOperationReport', auth, adminController.sendUnusual
 router.post('/pld/generalListSearch', auth, adminController.generalListSearch)
 router.get('/pld/getListByPage/:list/:page', auth, adminController.getListByPage)
 router.post('/pld/addNameToList', auth, adminController.addNameToList)
+router.get('/pld/getRiskFactors/:elemento/:page', auth, adminController.getRiskFactors)
+router.put('/pld/editRiskFactor', auth, adminController.editRiskFactor)
 
 router.get('/*', adminController.renderAdminApp)
 

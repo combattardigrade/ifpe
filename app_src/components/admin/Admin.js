@@ -12,6 +12,7 @@ import UnusualOperation from './UnusualOperation'
 import ListSearch from './ListSearch'
 import ViewList from './ViewList'
 import AddListName from './AddListName'
+import RiskMatrix from './RiskMatrix'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/custom.css'
 import { Container } from 'react-bootstrap'
@@ -35,6 +36,8 @@ class Admin extends Component {
                     <Route path={`${match.path}/listas/busqueda`} component={withAdminAuth(ListSearch)} />                
                     <Route path={`${match.path}/lista/:list/:page`} component={withAdminAuth(ViewList)} />                
                     <Route path={`${match.path}/listas/addName`} component={withAdminAuth(AddListName)} />
+                    <Route path={`${match.path}/matrizRiesgo/:elemento/:page`} component={withAdminAuth(RiskMatrix)} />
+
                 </Container>
             </div>
         )

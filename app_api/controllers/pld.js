@@ -154,7 +154,7 @@ module.exports.getRiskFactors = (req, res) => {
         sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
         return
     }
-    console.log('test')
+    
     sequelize.transaction(async (t) => {
         let user = await User.findOne({
             where: {
@@ -1500,6 +1500,18 @@ module.exports.sendUnusualOperationReport = (req, res) => {
         unusualOperation.medidas = medidas
         unusualOperation.oficialCumplimientoId = userId
         await unusualOperation.save({ transaction: t })
+
+        if(dictamen == 'procedente') {
+            let userProfile = await UserProfile.findOne({
+                where: {
+                    userId: unusualOperation.userId
+                },
+                transaction: t
+            })
+
+            userProfile.nivelRiesgo = 'alto'
+            await userProfile.save({transaction: t})
+        }
 
         sendJSONresponse(res, 200, unusualOperation)
         return

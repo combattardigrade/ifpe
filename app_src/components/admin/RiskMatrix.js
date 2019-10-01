@@ -22,6 +22,7 @@ class RiskMatrix extends Component {
     }
 
     componentDidMount() {
+        document.title = 'Matriz de Riesgo | Sistema Automatizado'
         let self = this
         const { match: { params } } = this.props
         getCSRFToken()

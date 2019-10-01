@@ -16,7 +16,7 @@ class AddListName extends Component {
     }
 
     componentDidMount() {
-        document.title = 'Añadir nombre a lista de personas'
+        document.title = 'Añadir nombre a lista de personas | Sistema Automatizado'
         getCSRFToken()
             .then(res => this.setState({ csrf: res.csrf, loading: false }))
     }

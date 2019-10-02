@@ -15,6 +15,55 @@ const moment = require('moment')
 const sendJSONresponse = require('../../utils/index').sendJSONresponse
 
 
+function generateReportFile (params) {
+    const tipoReporte = params.tipoReporte
+
+    if(!tipoReporte) 
+        return 'Ingresa el Tipo de Reporte'    
+    if(tipoReporte.length !== 1)
+        return 
+}
+
+module.exports.generateReport = (req, res) => { 
+    const userId = req.user.id
+    const tipoReporte = req.body.tipoReporte
+    const periodoReporte = req.body.periodoReporte
+    const folio = req.body.folio
+    const organoSupervisor = req.body.organoSupervisor
+    const claveRegistroSujetoObligado = req.body.claveRegistroSujetoObligado
+    const localidad = req.body.localidad
+
+    if(!userId || !operationId) {
+        sendJSONresponse(res, 404, {message: 'Ingresa todos los campos requeridos'})
+        return
+    }
+
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 2
+                }
+            },
+            transaction: t
+        })
+
+        if(!user) {
+            sendJSONresponse(res,404,{message: 'El usuario no existe o no tiene suficientes privilegios'})
+            return
+        }
+
+        Unu
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            return
+        })
+}
+
 module.exports.editRiskFactor = (req, res) => {
     const userId = req.user.id
     const riskFactorId = parseInt(req.body.riskFactorId)

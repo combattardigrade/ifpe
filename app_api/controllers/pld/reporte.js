@@ -133,15 +133,14 @@ module.exports.insertOperation = (req, res) => {
     }
 
     // check if folio it's not already in use
-    OperacionReporte.findOne({ where: { reporteId, folio, } })
-        .then((operacion) => {
-            if (operacion && 'categoria' in operacion) {
-                if (operacion.categoria == 'principal') {
-                    sendJSONresponse(res, 404, { message: 'Ya existe una operación principal en el reporte con el Folio ingresado' })
-                    return
-                }
-            }
-        })
+    let operacion = await OperacionReporte.findOne({ where: { reporteId, folio, }, transaction: t })
+
+    if (operacion && 'categoria' in operacion) {
+        if (operacion.categoria == 'principal') {
+            sendJSONresponse(res, 404, { message: 'Ya existe una operación principal en el reporte con el Folio ingresado' })
+            return
+        }
+    }
 
     // Check columna 4 - Organo Supervisor
     if (!organoSupervisor || organoSupervisor.length != 6) {

@@ -31,6 +31,8 @@ const PEPsModel = require('./peps')
 const MatrizRiesgoModel = require('./matrizRiesgo')
 const RiesgoClienteModel = require('./riesgoCliente')
 const UnusualOperationModel = require('./unusualOperation')
+const ReporteModel = require('./operacionReporte')
+const OperacionReporteModel = require('./operacionReporte')
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -80,6 +82,8 @@ const PEPs = PEPsModel(sequelize, Sequelize)
 const MatrizRiesgo = MatrizRiesgoModel(sequelize, Sequelize)
 const RiesgoCliente = RiesgoClienteModel(sequelize, Sequelize)
 const UnusualOperation = UnusualOperationModel(sequelize, Sequelize)
+const Reporte = ReporteModel(sequelize, Sequelize)
+const OperacionReporte = OperacionReporteModel(sequelize, Sequelize)
 
 User.hasOne(CompanyProfile)
 
@@ -106,6 +110,9 @@ Balance.hasOne(Asset)
 User.hasMany(RiesgoCliente)
 UnusualOperation.belongsTo(User)
 UnusualOperation.belongsTo(RiesgoCliente)
+Reporte.hasMany(OperacionReporte)
+OperacionReporte.belongsTo(Reporte)
+
 
 sequelize.sync({force: false})
     .then(() => {
@@ -144,4 +151,6 @@ module.exports = {
     MatrizRiesgo,
     RiesgoCliente,
     UnusualOperation,
+    Reporte,
+    OperacionReporte
 }

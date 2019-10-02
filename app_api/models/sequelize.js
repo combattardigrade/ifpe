@@ -31,7 +31,7 @@ const PEPsModel = require('./peps')
 const MatrizRiesgoModel = require('./matrizRiesgo')
 const RiesgoClienteModel = require('./riesgoCliente')
 const UnusualOperationModel = require('./unusualOperation')
-const ReporteModel = require('./operacionReporte')
+const ReporteModel = require('./reporte')
 const OperacionReporteModel = require('./operacionReporte')
 
 const sequelize = new Sequelize(

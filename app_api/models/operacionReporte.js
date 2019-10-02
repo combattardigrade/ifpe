@@ -1,3 +1,6 @@
+// Formato de reporte
+// http://www.dof.gob.mx/nota_detalle.php?codigo=5439234&fecha=30/05/2016
+
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('operacionReporte', { 
         reporteId: {
@@ -183,6 +186,12 @@ module.exports = (sequelize, DataTypes) => {
         razones: {
             type: DataTypes.TEXT,
             allowNull: true
+        },
+        // principal | relacionada
+        categoria: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: 'principal'
         }
     })
 }

@@ -8,5 +8,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true,
         },
+        alias: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        status: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: 'incompleto'
+        }
     })
 }

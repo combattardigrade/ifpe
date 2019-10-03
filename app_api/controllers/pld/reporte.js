@@ -265,7 +265,7 @@ module.exports.insertOperation = async (req, res) => {
 
     // Tipo de reporte 1
     // Tipo de reporte 2 o 3 que son Operaciones Principales, es decir, consecutivoCuentas == '00'
-    if (tipoReporte == 1 || ((tipoReporte == 2 || tipoReporte == 3) && (consecutivoCuentas == '00'))) {
+    if (tipoReporte == 1 || ((tipoReporte == 2 || tipoReporte == 3) && (!consecutivoCuentas || consecutivoCuentas == '00'))) {
 
         // Check columna 6 - Localidad
         // Catagolo de localidades tiene 12 caracteres

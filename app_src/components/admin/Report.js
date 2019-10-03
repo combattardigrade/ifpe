@@ -2,11 +2,13 @@ import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import Loading from '../Loading'
+import AddReportOperation from './AddReportOperation'
 // bootstrap
-import { Form, Row, Col, Button, Table, Modal, Tabs, Tab } from 'react-bootstrap'
-import MyAlert from './MyAlert'
+import { Form, Row, Col, Button, Table, Modal, Tabs, Tab, OverlayTrigger, Popover } from 'react-bootstrap'
+
 // api
 import { getReportOperations } from '../../utils/api'
+
 
 class Report extends Component {
     state = {
@@ -14,6 +16,7 @@ class Report extends Component {
         serverRes: '',
         csrf: '',
         alertError: true,
+        showModal: false
     }
 
     componentDidMount() {
@@ -28,6 +31,7 @@ class Report extends Component {
                 self.setState({ loading: false, report: res })
             })
     }
+
 
     render() {
 
@@ -44,9 +48,9 @@ class Report extends Component {
                     <Col sm={{ span: 12 }} md={{ span: 10, offset: 1 }}>
                         <h3>Reporte</h3>
 
-                        <h5 style={{marginTop: 20}}>Resumen general</h5>
-                        <Table>
-                            
+                        <h5 style={{ marginTop: 20 }}>Resumen general</h5>
+                        <Table style={{ marginTop: 20 }}>
+
                             <tbody>
                                 <tr>
                                     <td>Estado</td>
@@ -63,7 +67,7 @@ class Report extends Component {
                                 <tr>
                                     <td>Total operaciones principales</td>
                                     <td></td>
-                                </tr>                                
+                                </tr>
                                 <tr>
                                     <td>Fecha de última modificación</td>
                                     <td>{report.updatedAt}</td>
@@ -75,7 +79,7 @@ class Report extends Component {
                                 <tr>
                                     <td>Agregar Operación</td>
                                     <td>
-                                        <Button>Agregar operación</Button>
+                                        <Button onClick={e => this.setState({ showModal: true })}>Agregar operación</Button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -87,7 +91,7 @@ class Report extends Component {
                             </tbody>
                         </Table>
 
-                        <h5 style={{marginTop: 40}}>Operaciones</h5>
+                        <h5 style={{ marginTop: 40 }}>Operaciones</h5>
                         <Tabs justify variant="tabs" style={{ marginTop: 20 }}>
                             {
                                 report.operacionReportes.length > 0
@@ -185,7 +189,7 @@ class Report extends Component {
                                                             <td>Monto</td>
                                                             <td>{op.monto}</td>
                                                             <td>{op.monto}</td>
-                                                        </tr>                                                        
+                                                        </tr>
                                                         <tr>
                                                             <td>12</td>
                                                             <td>Moneda</td>
@@ -335,12 +339,12 @@ class Report extends Component {
                                                             <td>Razones</td>
                                                             <td>{op.razones}</td>
                                                             <td>{op.razones}</td>
-                                                        </tr>  
+                                                        </tr>
                                                     </tbody>
                                                 </Table>
-                                                <div style={{textAlign: 'center', marginTop: 20,marginBottom: 20}}>
+                                                <div style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
                                                     <Button variant="danger">Eliminar Operación No. {(index + 1)}</Button>
-                                                </div>                                                
+                                                </div>
                                             </Tab>
                                         )
 
@@ -352,11 +356,40 @@ class Report extends Component {
 
                     </Col>
                 </Row>
+                <MyModal
+                    onHide={() => this.setState({ showModal: false })}
+                    showModal={this.state.showModal}
+                />
             </Fragment>
         )
     }
 }
 
+function MyModal(props) {
+    return (
+        <Modal onHide={props.onHide} show={props.showModal} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Añadir operación a reporte</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <AddReportOperation />
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={props.onHide}>Close</Button>
+            </Modal.Footer>
+        </Modal>
+    )
+}
+function MyPopover(props) {
+    return (
+        <Popover id="popover-basic">
+            <Popover.Title as="h3">{props.title}</Popover.Title>
+            <Popover.Content>
+                {props.content}
+            </Popover.Content>
+        </Popover>
+    )
+}
 function mapStateToProps() {
     return {
 

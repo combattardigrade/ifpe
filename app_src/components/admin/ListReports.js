@@ -51,6 +51,7 @@ class ListReports extends Component {
                                 <td>Estado</td>
                                 <td>Fecha</td>
                                 <td>Ver</td>
+                                <td>Eliminar</td>
                             </tr>
                         </thead>
                         <tbody>
@@ -67,13 +68,24 @@ class ListReports extends Component {
                                             <td>{r.createdAt}</td>
                                             <td>
                                                 <Link to={"/admin/reporte/" + r.id}>
-                                                    <Button>Ver reporte</Button>    
+                                                    <Button>Ver reporte</Button>
                                                 </Link>
+                                            </td>
+                                            <td>
+                                                {
+                                                    r.status == 'incompleto'
+                                                        ?
+                                                        <Link to={"/admin/reporte/" + r.id}>
+                                                            <Button variant="danger">Eliminar</Button>
+                                                        </Link>
+                                                        : null
+                                                }
                                             </td>
                                         </tr>
                                     ))
                                     :
                                     <tr>
+                                        <td>-</td>
                                         <td>-</td>
                                         <td>-</td>
                                         <td>-</td>

@@ -18,9 +18,10 @@ class AddReportOperation extends Component {
         csrf: '',
         alertError: true,
         totalOps: 1,
-        
+
         // form
         categoria: 'principal',
+        tieneRelacionadas: 'no',
         tipoReporte: 1,
         periodoReporte: '',
         folio: '000001',
@@ -48,7 +49,7 @@ class AddReportOperation extends Component {
         colonia: '',
         ciudad: '',
         telefono: '',
-        actividadEconomica: '',        
+        actividadEconomica: '',
         consecutivoCuentas: '',
         numeroCuentaOperacionRelacionada: '',
         claveSujetoObligadoOperacionRelacionada: '',
@@ -81,12 +82,15 @@ class AddReportOperation extends Component {
         console.log('click')
     }
 
-    handleAddOp = (e) => {
+    handleHasRelatedChange = (e) => {
         e.preventDefault()
-        const { totalOps } = this.state
-        console.log('click')
-        this.setState({ totalOps: (totalOps + 1) })
+        if(e.target.value == 'si') {
+            this.setState({tieneRelacionadas: e.target.value, consecutivoCuentas: '00'})
+        } else {
+            this.setState({tieneRelacionadas: e.target.value, consecutivoCuentas: ''})
+        }
     }
+
 
     render() {
 
@@ -101,28 +105,49 @@ class AddReportOperation extends Component {
                 <Row style={{ marginTop: 20 }}>
                     <Col sm={{ span: 12 }} md={{ span: 10, offset: 1 }}>
                         <Form style={{ marginTop: 10 }}>
-                            <Form.Group>
-                                <Form.Label>Categoría de la operación:</Form.Label>
-                                <Form.Control as="select" defaultValue="principal" onChange={e => { e.preventDefault(); this.handleInputChange("categoria", e.target.value) }}>
-                                    <option value="principal">Principal</option>
-                                    <option value="relacionada">Relacionada</option>
-                                </Form.Control>
-                            </Form.Group>
+
                             <Form.Group>
                                 <Form.Label>Tipo de reporte:</Form.Label>
-                                <Form.Control  as="select" onChange={e => { e.preventDefault(); this.handleInputChange("tipoReporte", e.target.value) }}>
+                                <Form.Control as="select" onChange={e => { e.preventDefault(); this.handleInputChange("tipoReporte", e.target.value) }}>
                                     <option value="1">Operación Relevante</option>
                                     <option value="2">Operación Inusual</option>
                                     <option value="3">Operación Interna Preocupante</option>
                                 </Form.Control>
                             </Form.Group>
+                            {
+                                this.state.tipoReporte != 1
+                                    ?
+                                    <Fragment>
+                                        <Form.Group>
+                                            <Form.Label>Categoría de la operación:</Form.Label>
+                                            <Form.Control as="select" defaultValue="principal" onChange={e => { e.preventDefault(); this.handleInputChange("categoria", e.target.value) }}>
+                                                <option value="principal">Principal</option>
+                                                <option value="relacionada">Relacionada</option>
+                                            </Form.Control>
+                                        </Form.Group>
+                                        {
+                                            this.state.categoria == 'principal'
+                                                ?
+                                                <Form.Group>
+                                                    <Form.Label>¿La operación tiene personas, cuentas, u operaciones relacionadas?:</Form.Label>
+                                                    <Form.Control defaultValue="no" as="select" onChange={this.handleHasRelatedChange}>
+                                                        <option value="si">Sí</option>
+                                                        <option value="no">No</option>
+                                                    </Form.Control>
+                                                </Form.Group>
+                                                : null
+                                        }
+                                    </Fragment>
+                                    : null
+
+                            }
                             <Form.Group>
                                 <OverlayTrigger trigger="hover" placement="right" overlay={MyPopover({ title: 'Ayuda', content: 'Ingresar la fecha en formato AAAAMM para Operaciones Relevantes y AAAAMMDD para otro tipo de Operaciones' })}><Form.Label>Fecha de reporte: <MdInfo color="#007bff" /> </Form.Label></OverlayTrigger>
                                 <Form.Control value={this.state.periodoReporte} onChange={e => { e.preventDefault(); this.handleNumInputChange("periodoReporte", e.target.value) }} type="text" maxLength={this.state.tipoReporte == 1 ? 6 : 8} placeholder={this.state.tipoReporte == 1 ? 'Formato AAAAMM' : 'Formato AAAAMMDD'} />
                             </Form.Group>
                             <Form.Group>
                                 <OverlayTrigger trigger="hover" placement="right" overlay={MyPopover({ title: 'Ayuda', content: 'Folio de cada operación a reportar. Deberá iniciar en 000001' })}><Form.Label>Folio: <MdInfo color="#007bff" /></Form.Label></OverlayTrigger>
-                                <Form.Control value={this.state.folio} onChange={e => { e.preventDefault(); this.handleInputChange("folio", e.target.value) }} type="text" maxLength="6"  />
+                                <Form.Control value={this.state.folio} onChange={e => { e.preventDefault(); this.handleInputChange("folio", e.target.value) }} type="text" maxLength="6" />
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Órgano Supervisor:</Form.Label>
@@ -133,7 +158,7 @@ class AddReportOperation extends Component {
                                 <Form.Control value={this.state.claveSujetoObligado} onChange={e => { e.preventDefault(); this.handleInputChange("claveSujetoObligado", e.target.value) }} type="text" maxLength="8" />
                             </Form.Group>
                             {
-                                this.state.categoria == 'principal'
+                                this.state.categoria == 'principal' 
                                     ?
                                     <Fragment>
                                         <Form.Group>
@@ -173,7 +198,7 @@ class AddReportOperation extends Component {
                                                 ?
                                                 <Form.Group>
                                                     <OverlayTrigger trigger="hover" placement="right" overlay={MyPopover({ title: 'Ayuda', content: 'Formato AAAAMMDD. Debe ser enviado dentro de los sesenta días naturales contados a partir de la fecha de detección.' })}><Form.Label>Fecha de detección de la Operación: <MdInfo color="#007bff" /></Form.Label></OverlayTrigger>
-                                                    <Form.Control  value={this.state.fechaDeteccionOperacion} onChange={e => { e.preventDefault(); this.handleNumInputChange("fechaDeteccionOperacion", e.target.value) }} type="text" maxLength="8" placeholder="Formato AAAAMMDD" />
+                                                    <Form.Control value={this.state.fechaDeteccionOperacion} onChange={e => { e.preventDefault(); this.handleNumInputChange("fechaDeteccionOperacion", e.target.value) }} type="text" maxLength="8" placeholder="Formato AAAAMMDD" />
                                                 </Form.Group>
                                                 : null
                                         }
@@ -292,13 +317,6 @@ class AddReportOperation extends Component {
                                         </Form.Group>
                                     </Fragment>
                             }
-
-
-
-
-
-
-
 
                             <Button onClick={this.handleSubmit} variant="success">
                                 Añadir operación

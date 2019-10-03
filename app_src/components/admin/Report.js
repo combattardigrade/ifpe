@@ -369,7 +369,7 @@ function MyModal(props) {
     return (
         <Modal onHide={props.onHide} show={props.showModal} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Header closeButton>
-                <Modal.Title>Añadir operación a reporte</Modal.Title>
+                <Modal.Title>Añadir operación al reporte</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <AddReportOperation />

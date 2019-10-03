@@ -43,7 +43,52 @@ class Report extends Component {
                 <Row style={{ marginTop: 40 }}>
                     <Col sm={{ span: 12 }} md={{ span: 10, offset: 1 }}>
                         <h3>Reporte</h3>
-                        <Tabs justify variant="tabs" style={{ marginTop: 40 }}>
+
+                        <h5 style={{marginTop: 20}}>Resumen general</h5>
+                        <Table>
+                            
+                            <tbody>
+                                <tr>
+                                    <td>Estado</td>
+                                    <td>{report.status}</td>
+                                </tr>
+                                <tr>
+                                    <td>Alias</td>
+                                    <td>{report.alias}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total operaciones</td>
+                                    <td>{report.operacionReportes.length}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total operaciones principales</td>
+                                    <td></td>
+                                </tr>                                
+                                <tr>
+                                    <td>Fecha de última modificación</td>
+                                    <td>{report.updatedAt}</td>
+                                </tr>
+                                <tr>
+                                    <td>Fecha de creación</td>
+                                    <td>{report.createdAt}</td>
+                                </tr>
+                                <tr>
+                                    <td>Agregar Operación</td>
+                                    <td>
+                                        <Button>Agregar operación</Button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Eliminar Reporte</td>
+                                    <td>
+                                        <Button variant="danger">Eliminar reporte</Button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </Table>
+
+                        <h5 style={{marginTop: 40}}>Operaciones</h5>
+                        <Tabs justify variant="tabs" style={{ marginTop: 20 }}>
                             {
                                 report.operacionReportes.length > 0
                                     ?
@@ -290,10 +335,12 @@ class Report extends Component {
                                                             <td>Razones</td>
                                                             <td>{op.razones}</td>
                                                             <td>{op.razones}</td>
-                                                        </tr>
-
+                                                        </tr>  
                                                     </tbody>
                                                 </Table>
+                                                <div style={{textAlign: 'center', marginTop: 20,marginBottom: 20}}>
+                                                    <Button variant="danger">Eliminar Operación No. {(index + 1)}</Button>
+                                                </div>                                                
                                             </Tab>
                                         )
 

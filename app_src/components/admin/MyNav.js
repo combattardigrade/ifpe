@@ -78,6 +78,14 @@ class MyNav extends Component {
                             <Nav.Link >Agregar Factor de Riesgo</Nav.Link>
                         </LinkContainer>                        
                     </NavDropdown>
+                    <NavDropdown title="Reportes" id="collasible-nav-dropdown2" className="dropdown-link">                        
+                        <LinkContainer to="/admin/reporte/nuevo" exact>
+                            <Nav.Link >Generar nuevo reporte</Nav.Link>
+                        </LinkContainer>    
+                        <LinkContainer to="/admin/reportes" exact>
+                            <Nav.Link >Ver Reportes</Nav.Link>
+                        </LinkContainer>                    
+                    </NavDropdown>
 
                 </Navbar.Collapse>
             </Navbar>

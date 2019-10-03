@@ -59,7 +59,60 @@ module.exports.createReport = (req, res) => {
         })
 }
 
-module.exports.insertOperation = (req, res) => {
+module.exports.getAllReportsByPage = (req,res) => {
+    const userId = req.user.id
+    const page = req.params.page ? parseInt(req.params.page) : 1
+    const limit = 50
+    let offset = 0
+    let result, pages
+
+    if(!userId) {
+        sendJSONresponse(res,404,{message:'Ingresa todos los campos requeridos'})
+        return
+    }
+
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 2
+                }
+            },
+            transaction: t
+        })
+
+        if(!user) {
+            sendJSONresponse(res,404,{message:'El usuario no existe o no tiene suficientes privilegios para realizar la acción.'})
+            return
+        }
+
+        result = await Reporte.findAndCountAll({ transaction: t })
+
+        pages = Math.ceil(result.count / limit)
+        offset = limit * (page - 1)
+
+        let reports = await Reporte.findAll({
+           limit,
+           offset,
+           order: [['createdAt', 'DESC']],
+           transaction: t
+        })
+
+        sendJSONresponse(res, 200, {result: reports, count: result.count, pages: pages})
+        return
+
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            return
+        })
+
+} 
+
+module.exports.insertOperation = async (req, res) => {
     const userId = req.user.id
     const reporteId = req.body.reporteId
     const tipoReporte = req.body.tipoReporte

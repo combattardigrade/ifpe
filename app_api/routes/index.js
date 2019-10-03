@@ -58,4 +58,5 @@ router.put('/pld/editRiskFactor', auth, pldController.editRiskFactor)
 // pld => reporte
 router.post('/pld/reporte', auth, reporteController.createReport)
 router.get('/pld/reportes/:page', auth, reporteController.getAllReportsByPage)
+router.get('/pld/reporte/:reportId', auth, reporteController.getReportOperations)
 module.exports = router

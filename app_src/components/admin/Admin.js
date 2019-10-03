@@ -13,6 +13,7 @@ import ListSearch from './ListSearch'
 import ViewList from './ViewList'
 import AddListName from './AddListName'
 import RiskMatrix from './RiskMatrix'
+import NewReport from './NewReport'
 import Report from './Report'
 import ListReports from './ListReports'
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -40,7 +41,8 @@ class Admin extends Component {
                     <Route path={`${match.path}/listas/addName`} component={withAdminAuth(AddListName)} />
                     <Route path={`${match.path}/matrizRiesgo/:elemento/:page`} component={withAdminAuth(RiskMatrix)} />
                     <Route path={`${match.path}/reportes/:page`} component={withAdminAuth(ListReports)} />
-                    <Route path={`${match.path}/reporte/nuevo`} component={withAdminAuth(Report)} />
+                    <Route path={`${match.path}/reporte`} exact component={withAdminAuth(NewReport)} />
+                    <Route path={`${match.path}/reporte/:reportId`} exact component={withAdminAuth(Report)} />
                 </Container>
             </div>
         )

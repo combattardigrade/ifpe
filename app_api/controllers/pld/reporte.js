@@ -7,6 +7,61 @@ const { Op } = require('sequelize')
 const sendJSONresponse = require('../../../utils/index').sendJSONresponse
 const moment = require('moment')
 
+module.exports.getReportOperations = (req, res) => {
+    const userId = req.user.id
+    const reportId = parseInt(req.params.reportId)
+
+    if (!userId || !reportId || isNaN(reportId)) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
+        return
+    }
+
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 2
+                }
+            },
+            transaction: t
+        })
+
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'El usuario no existe o no tiene suficientes privilegios para relizar la operación' })
+            return
+        }
+
+        let report = await Reporte.findOne({
+            where: {
+                id: reportId,
+            },
+            include: [
+                {
+                    model: OperacionReporte,
+                    // attributes: ['id', 'folio', 'tipoReporte', 'periodoReporte', 'tipoOperacion', 'monto', 'moneda', 'tipoPersona', 'categoria']
+                }
+            ]
+        })
+
+        if (!report) {
+            sendJSONresponse(res, 200, { message: 'El reporte no fue encontrado o no existe' })
+            return
+        }
+
+        sendJSONresponse(res, 200, report)
+        return
+
+
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
+            return
+        })
+}
+
 module.exports.createReport = (req, res) => {
     const userId = req.user.id
     const alias = req.body.alias
@@ -48,7 +103,7 @@ module.exports.createReport = (req, res) => {
                     sendJSONresponse(res, 200, { message: 'Ya existe un reporte con el alias ingresado' })
                     return
                 }
-                sendJSONresponse(res, 404, reporte)
+                sendJSONresponse(res, 200, reporte)
                 return
             })
     })
@@ -59,15 +114,15 @@ module.exports.createReport = (req, res) => {
         })
 }
 
-module.exports.getAllReportsByPage = (req,res) => {
+module.exports.getAllReportsByPage = (req, res) => {
     const userId = req.user.id
     const page = req.params.page ? parseInt(req.params.page) : 1
     const limit = 50
     let offset = 0
     let result, pages
 
-    if(!userId) {
-        sendJSONresponse(res,404,{message:'Ingresa todos los campos requeridos'})
+    if (!userId) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
         return
     }
 
@@ -83,8 +138,8 @@ module.exports.getAllReportsByPage = (req,res) => {
             transaction: t
         })
 
-        if(!user) {
-            sendJSONresponse(res,404,{message:'El usuario no existe o no tiene suficientes privilegios para realizar la acción.'})
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'El usuario no existe o no tiene suficientes privilegios para realizar la acción.' })
             return
         }
 
@@ -94,23 +149,23 @@ module.exports.getAllReportsByPage = (req,res) => {
         offset = limit * (page - 1)
 
         let reports = await Reporte.findAll({
-           limit,
-           offset,
-           order: [['createdAt', 'DESC']],
-           transaction: t
+            limit,
+            offset,
+            order: [['createdAt', 'DESC']],
+            transaction: t
         })
 
-        sendJSONresponse(res, 200, {result: reports, count: result.count, pages: pages})
+        sendJSONresponse(res, 200, { result: reports, count: result.count, pages: pages })
         return
 
     })
         .catch((err) => {
             console.log(err)
-            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
             return
         })
 
-} 
+}
 
 module.exports.insertOperation = async (req, res) => {
     const userId = req.user.id

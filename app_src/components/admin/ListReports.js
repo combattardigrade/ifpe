@@ -19,12 +19,13 @@ class ListReports extends Component {
         document.title = 'Reportes | Sistema Automatizado'
         let self = this
         const { match: { params } } = this.props
-        getAllReportsByPage({page: params.page})
+
+        getAllReportsByPage({ page: params.page })
             .then(res => res.json())
             .then(res => {
                 console.log(res)
-                self.setState({loading:false, results: res.result, count: res.count, pages:  res.pages})
-            }) 
+                self.setState({ loading: false, results: res.result, count: res.count, pages: res.pages })
+            })
     }
 
     render() {
@@ -49,6 +50,7 @@ class ListReports extends Component {
                                 <td>Alias</td>
                                 <td>Estado</td>
                                 <td>Fecha</td>
+                                <td>Ver</td>
                             </tr>
                         </thead>
                         <tbody>
@@ -63,10 +65,16 @@ class ListReports extends Component {
                                             <td>{r.alias}</td>
                                             <td>{r.status}</td>
                                             <td>{r.createdAt}</td>
+                                            <td>
+                                                <Link to={"/admin/reporte/" + r.id}>
+                                                    <Button>Ver reporte</Button>    
+                                                </Link>
+                                            </td>
                                         </tr>
                                     ))
                                     :
                                     <tr>
+                                        <td>-</td>
                                         <td>-</td>
                                         <td>-</td>
                                         <td>-</td>
@@ -86,7 +94,7 @@ class ListReports extends Component {
                             null
                     }
                     <Link to={'/admin/reportes/' + (parseInt(params.page) + 1)}>
-                        <Button style={{marginLeft: 10}}>Página siguiente</Button>
+                        <Button style={{ marginLeft: 10 }}>Página siguiente</Button>
                     </Link>
 
                 </Col>

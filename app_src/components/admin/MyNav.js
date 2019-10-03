@@ -79,10 +79,10 @@ class MyNav extends Component {
                         </LinkContainer>                        
                     </NavDropdown>
                     <NavDropdown title="Reportes" id="collasible-nav-dropdown2" className="dropdown-link">                        
-                        <LinkContainer to="/admin/reporte/nuevo" exact>
+                        <LinkContainer to="/admin/reporte" exact>
                             <Nav.Link >Generar nuevo reporte</Nav.Link>
                         </LinkContainer>    
-                        <LinkContainer to="/admin/reportes" exact>
+                        <LinkContainer to="/admin/reportes/1" exact>
                             <Nav.Link >Ver Reportes</Nav.Link>
                         </LinkContainer>                    
                     </NavDropdown>

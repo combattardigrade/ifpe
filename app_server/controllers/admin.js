@@ -315,7 +315,7 @@ module.exports.getDocument = function (req, res) {
 
 module.exports.getAllReportsByPage = function(req,res) {
     const page = req.params.page ? parseInt(req.params.page) : 1
-    console.log('terst')
+    
     rp({
         uri: API_HOST + '/pld/reportes/' + page,           
         method: 'GET',
@@ -336,3 +336,46 @@ module.exports.getAllReportsByPage = function(req,res) {
         })
 }
 
+module.exports.createReport = function(req,res) {
+    rp({
+        uri: API_HOST + '/pld/reporte',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        body: req.body,
+        json: true
+    })
+        .then((response) => {
+            sendJSONresponse(res, 200, response)
+            return
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 200, { message: err.message })
+        })
+}
+
+module.exports.getReportOperations = function(req,res) {
+    const reportId = parseInt(req.params.reportId)
+    
+    rp({
+        uri: API_HOST + '/pld/reporte/' + reportId,           
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        json: true
+    })
+        .then((response) => {
+            sendJSONresponse(res, 200, response)
+            return
+        })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 404, err)
+            return
+        })
+}

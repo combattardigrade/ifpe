@@ -42,7 +42,7 @@ class Admin extends Component {
                     <Route path={`${match.path}/matrizRiesgo/:elemento/:page`} component={withAdminAuth(RiskMatrix)} />
                     <Route path={`${match.path}/reportes/:page`} component={withAdminAuth(ListReports)} />
                     <Route path={`${match.path}/reporte`} exact component={withAdminAuth(NewReport)} />
-                    <Route path={`${match.path}/reporte/:reportId`} exact component={withAdminAuth(Report)} />
+                    <Route path={`${match.path}/reporte/:reporteId`} exact component={withAdminAuth(Report)} />
                 </Container>
             </div>
         )

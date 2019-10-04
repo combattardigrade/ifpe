@@ -24,7 +24,7 @@ class Report extends Component {
         let self = this
         const { match: { params } } = this.props
 
-        getReportOperations({ reportId: params.reportId })
+        getReportOperations({ reportId: params.reporteId })
             .then(res => res.json())
             .then(res => {
                 console.log(res)
@@ -32,6 +32,10 @@ class Report extends Component {
             })
     }
 
+    closeModal = (e) => {
+        e.preventDefault()
+        this.setState({showModal: false})
+    }
 
     render() {
 
@@ -359,6 +363,8 @@ class Report extends Component {
                 <MyModal
                     onHide={() => this.setState({ showModal: false })}
                     showModal={this.state.showModal}
+                    reporteId={this.state.report.id}
+                    closeModal={this.closeModal}
                 />
             </Fragment>
         )
@@ -372,7 +378,7 @@ function MyModal(props) {
                 <Modal.Title>Añadir operación al reporte</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <AddReportOperation />
+                <AddReportOperation reporteId={props.reporteId} closeModal={props.onHide} />
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={props.onHide}>Close</Button>

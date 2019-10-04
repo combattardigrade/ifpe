@@ -8,7 +8,7 @@ import MyAlert from './MyAlert'
 // icons
 import { MdInfo, MdAdd } from 'react-icons/md'
 // api
-import { getCSRFToken } from '../../utils/api'
+import { getCSRFToken, addReportOperation } from '../../utils/api'
 
 
 class AddReportOperation extends Component {
@@ -20,6 +20,7 @@ class AddReportOperation extends Component {
         totalOps: 1,
 
         // form
+        reporteId: '',
         categoria: 'principal',
         tieneRelacionadas: 'no',
         tipoReporte: 1,
@@ -62,8 +63,9 @@ class AddReportOperation extends Component {
 
     componentDidMount() {
         document.title = 'Generar nuevo reporte | Sistema Automatizado'
+        const { reporteId } = this.props
         getCSRFToken()
-            .then(res => this.setState({ csrf: res.csrf, loading: false }))
+            .then(res => this.setState({ csrf: res.csrf, loading: false, reporteId }))
     }
 
     handleInputChange = (name, value) => {
@@ -80,14 +82,50 @@ class AddReportOperation extends Component {
     handleSubmit = (e) => {
         e.preventDefault()
         console.log('click')
+
+        // check data client side ?
+        const { tipoReporte, periodoReporte, folio, organoSupervisor, claveSujetoObligado, localidad, codigoPostalSucursal,
+            tipoOperacion, instrumentoMonetario, numeroCuenta, monto, moneda, fechaOperacion, fechaDeteccionOperacion,
+            nacionalidad, tipoPersona, razonSocial, nombre, apellidoPaterno, apellidoMaterno, rfc, curp, fechaNacimiento,
+            domicilio, colonia, ciudad, telefono, actividadEconomica, consecutivoCuentas, numeroCuentaOperacionRelacionada,
+            claveSujetoObligadoOperacionRelacionada, nombrePersonaRelacionada, apellidoPaternoPersonaRelacionada,
+            apellidoMaternoPersonaRelacionada, descripcionOperacion, razones, categoria, reporteId, csrf
+        } = this.state
+        
+        if(!reporteId || !tipoReporte || !periodoReporte || !folio || !organoSupervisor || !claveSujetoObligado) {
+            this.setState({serverRes: 'Ingresa todos los campos requeridos'})
+            return
+        }
+
+        // send data
+        addReportOperation({
+            tipoReporte, periodoReporte, folio, organoSupervisor, claveSujetoObligado, localidad, codigoPostalSucursal,
+            tipoOperacion, instrumentoMonetario, numeroCuenta, monto, moneda, fechaOperacion, fechaDeteccionOperacion,
+            nacionalidad, tipoPersona, razonSocial, nombre, apellidoPaterno, apellidoMaterno, rfc, curp, fechaNacimiento,
+            domicilio, colonia, ciudad, telefono, actividadEconomica, consecutivoCuentas, numeroCuentaOperacionRelacionada,
+            claveSujetoObligadoOperacionRelacionada, nombrePersonaRelacionada, apellidoPaternoPersonaRelacionada,
+            apellidoMaternoPersonaRelacionada, descripcionOperacion, razones, categoria, reporteId, _csrf: csrf
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                console.log(res)
+                if('message' in res) {
+                    this.setState({serverRes: res.message})
+                    return
+                } else if ('id' in res) {
+                    this.setState({serverRes:'Operación añadida correctamente',alertError: false,})
+                    this.props.closeModal()
+                    return
+                }
+            })
     }
 
     handleHasRelatedChange = (e) => {
         e.preventDefault()
-        if(e.target.value == 'si') {
-            this.setState({tieneRelacionadas: e.target.value, consecutivoCuentas: '00'})
+        if (e.target.value == 'si') {
+            this.setState({ tieneRelacionadas: e.target.value, consecutivoCuentas: '00' })
         } else {
-            this.setState({tieneRelacionadas: e.target.value, consecutivoCuentas: ''})
+            this.setState({ tieneRelacionadas: e.target.value, consecutivoCuentas: '' })
         }
     }
 
@@ -105,7 +143,7 @@ class AddReportOperation extends Component {
                 <Row style={{ marginTop: 20 }}>
                     <Col sm={{ span: 12 }} md={{ span: 10, offset: 1 }}>
                         <Form style={{ marginTop: 10 }}>
-
+                            <MyAlert serverRes={this.state.serverRes} error={this.state.alertError} closeAlert={e => this.setState({ serverRes: '' })} />
                             <Form.Group>
                                 <Form.Label>Tipo de reporte:</Form.Label>
                                 <Form.Control as="select" onChange={e => { e.preventDefault(); this.handleInputChange("tipoReporte", e.target.value) }}>
@@ -158,12 +196,12 @@ class AddReportOperation extends Component {
                                 <Form.Control value={this.state.claveSujetoObligado} onChange={e => { e.preventDefault(); this.handleInputChange("claveSujetoObligado", e.target.value) }} type="text" maxLength="8" />
                             </Form.Group>
                             {
-                                this.state.categoria == 'principal' 
+                                this.state.categoria == 'principal'
                                     ?
                                     <Fragment>
                                         <Form.Group>
                                             <OverlayTrigger trigger="hover" placement="right" overlay={MyPopover({ title: 'Ayuda', content: 'La Localidad se debe capturar de acuerdo al catálogo que dé a conocer la Unidad de Inteligencia Financiera a través de la Comisión Nacional Bancaria y de Valores.' })}><Form.Label>Localidad: <MdInfo color="#007bff" /></Form.Label></OverlayTrigger>
-                                            <Form.Control value={this.state.localidad} onChange={e => { e.preventDefault(); this.handleInputChange("localidad", e.target.value) }} type="text" maxLength="8" placeholder="" />
+                                            <Form.Control value={this.state.localidad} onChange={e => { e.preventDefault(); this.handleInputChange("localidad", e.target.value) }} type="text" maxLength="12" placeholder="" />
                                         </Form.Group>
                                         <Form.Group>
                                             <OverlayTrigger trigger="hover" placement="right" overlay={MyPopover({ title: 'Ayuda', content: 'El código postal de la sucursal debe ser válido para la entidad federativa de la localidad reportada. Si la operación no se genera en sucursal, el código postal debe ser el de la casa matriz.' })}><Form.Label>Código Postal de la sucursal: <MdInfo color="#007bff" /></Form.Label></OverlayTrigger>
@@ -183,7 +221,7 @@ class AddReportOperation extends Component {
                                         </Form.Group>
                                         <Form.Group>
                                             <OverlayTrigger trigger="hover" placement="right" overlay={MyPopover({ title: 'Ayuda', content: '1) Las primeras 14 posiciones se utilizarán para los enteros y las 2 últimas para los decimales, separando las fracciones con un punto. 2) En los casos en que no esté involucrada una operación si no un acto, conducta o comportamiento que requiera ser reportado, esta casilla se deberá capturar en ceros.' })}><Form.Label>Monto: <MdInfo color="#007bff" /></Form.Label></OverlayTrigger>
-                                            <Form.Control required value={this.state.monto} onChange={e => { e.preventDefault(); this.handleNumInputChange("monto", e.target.value) }} type="text" maxLength="17" />
+                                            <Form.Control required value={this.state.monto} onChange={e => { e.preventDefault(); this.handleInputChange("monto", e.target.value) }} type="text" maxLength="17" />
                                         </Form.Group>
                                         <Form.Group>
                                             <OverlayTrigger trigger="hover" placement="right" overlay={MyPopover({ title: 'Ayuda', content: 'La Moneda se debe capturar de acuerdo al catálogo que dé a conocer la Unidad de Inteligencia Financiera a través de la Comisión Nacional Bancaria y de Valores.' })}><Form.Label>Moneda: <MdInfo color="#007bff" /></Form.Label></OverlayTrigger>

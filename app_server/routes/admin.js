@@ -3,8 +3,8 @@ const router = express.Router()
 const jwt = require('express-jwt')
 const auth = jwt({
     secret: process.env.JWT_SECRET,
-    getToken: function(req) {
-        if(req.cookies.token !== undefined) {            
+    getToken: function (req) {
+        if (req.cookies.token !== undefined) {
             return req.cookies.token
         } else {
             throw new Error('missing_token_cookie')
@@ -42,6 +42,8 @@ router.put('/pld/editRiskFactor', auth, adminController.editRiskFactor)
 router.get('/pld/reportes/:page', auth, adminController.getAllReportsByPage)
 router.post('/pld/reporte', auth, adminController.createReport)
 router.get('/pld/reporte/:reportId', auth, adminController.getReportOperations)
+router.post('/pld/reporte/addOperation', auth, adminController.addOperation)
+
 router.get('/*', adminController.renderAdminApp)
 
-module.exports =  router
+module.exports = router

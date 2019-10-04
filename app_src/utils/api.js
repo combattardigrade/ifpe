@@ -9,6 +9,18 @@ export function getCSRFToken() {
         .then(res => res.json())
 }
 
+export function addReportOperation(params) {
+    const url = API + 'pld/reporte/addOperation'
+    return fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(params),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+    })
+}
+
 export function getReportOperations(params) {
     const url = API + 'pld/reporte/' + params.reportId
     return fetch(url, {

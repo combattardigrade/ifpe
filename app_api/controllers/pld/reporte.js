@@ -208,7 +208,6 @@ module.exports.addOperation = (req, res) => {
     let razones = req.body.razones
     let categoria = req.body.categoria
 
-
     if (!userId) {
         sendJSONresponse(res, 404, { message: 'Inicia sesión para realizar la operación' })
         return
@@ -427,9 +426,9 @@ module.exports.addOperation = (req, res) => {
                 sendJSONresponse(res, 404, { message: 'Ingresa una Colonia válida. El campo debe medir máximo 30 caracteres' })
                 return
             }
-
+            
             // Check columna 26 - Ciudad o Poblacion
-            if (!ciudad || ciudad.length == 8) {
+            if (!ciudad || ciudad.length != 8) {                
                 sendJSONresponse(res, 404, { message: 'Ingresa una Ciudad o Población válida. El campo debe medir 8 caracteres' })
                 return
             }
@@ -552,8 +551,6 @@ module.exports.addOperation = (req, res) => {
                 sendJSONresponse(res, 404, {message: 'Ya existe una operación relacionada con el mismo folio y consecutivo de cuentas'})
                 return
             }
-
-
 
             // Check columna 30 - Numero de cuenta, contrato de la operacion relacionada
             if (!numeroCuentaOperacionRelacionada || numeroCuentaOperacionRelacionada.length > 16) {

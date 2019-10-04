@@ -674,4 +674,134 @@ module.exports.addOperation = (req, res) => {
         })
 }
 
+module.exports.deleteReport = (req,res) => {
+    const userId = req.user.id
+    const reporteId = req.params.reporteId
+    
+    if(!userId || !reporteId) {
+        sendJSONresponse(res,404,{message: 'Ingresa todos los campos requeridos'})
+        return
+    }
+
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 2
+                }                
+            },
+            transaction: t
+        })
+
+        if(!user) {
+            sendJSONresponse(res, 404, {message: 'El usuario que intentó realizar la operación no existe o no tiene suficientes privilegios'})
+            return
+        }
+
+        let reporte = await Reporte.findOne({
+            where: {
+                id: reporteId,                
+            },
+            transaction: t
+        })
+
+        // Don't continue if the status is not == 'incompleto'
+        if(!reporte || reporte && reporte.status != 'incompleto') {
+            sendJSONresponse(res, 404, {message: 'No se encontró el reporte ingresado o no es posible eliminarlo'})
+            return
+        }
+
+        // Destroy Report
+        await Reporte.destroy({
+            where: {
+                id: reporteId,
+                status: {
+                    [Op.not]: 'completo'
+                }
+            },
+            transaction: t
+        })
+
+        // Destroy all Operations in the report
+        await OperacionReporte.destroy({
+            where: {
+                reporteId
+            },
+            transaction: t
+        })
+
+        sendJSONresponse(res, 404, {message: 'Reporte eliminado correctamente', status: 'OK'})
+        return
+    })
+        .catch(err => {
+            console.log(err)
+            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            return
+        }) 
+}
+
+module.exports.deleteOperationReport = (req,res) => {
+    const userId = req.user.id
+    const operationId = req.params.operationId
+    
+    if(!userId || !operationId) {
+        sendJSONresponse(res,404,{message: 'Ingresa todos los campos requeridos'})
+        return
+    }
+
+    sequelize.transaction(async (t) => {
+        let user = await User.findOne({
+            where: {
+                id: userId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 2
+                }                
+            },
+            transaction: t
+        })
+
+        if(!user) {
+            sendJSONresponse(res, 404, {message: 'El usuario que intentó realizar la operación no existe o no tiene suficientes privilegios'})
+            return
+        }
+
+        let operation = await OperacionReporte.findOne({
+            where: {
+                id: operationId,                
+            },
+            include: [
+                {
+                    model: Reporte,
+                    attributes: ['id','status']
+                }
+            ],
+            transaction: t
+        })
+        
+        // Don't continue if the report is completed
+        if(!operation || operation && operation.reporte.status != 'incompleto') {
+            sendJSONresponse(res, 404, {message: 'No se encontró la operación ingresada o no es posible eliminarla'})
+            return
+        }        
+        
+        // Destroy Operation 
+        await OperacionReporte.destroy({
+            where: {
+                id: operationId
+            },
+            transaction: t
+        })
+
+        sendJSONresponse(res, 404, {message: 'Operación eliminada correctamente', status: 'OK'})
+        return
+    })
+        .catch(err => {
+            console.log(err)
+            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            return
+        }) 
+}
 

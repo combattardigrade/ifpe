@@ -60,4 +60,7 @@ router.post('/pld/reporte', auth, reporteController.createReport)
 router.get('/pld/reportes/:page', auth, reporteController.getAllReportsByPage)
 router.get('/pld/reporte/:reportId', auth, reporteController.getReportOperations)
 router.post('/pld/reporte/addOperation', auth, reporteController.addOperation)
+router.delete('/pld/reporte/:reporteId', auth, reporteController.deleteReport)
+router.delete('/pld/reporte/deleteOperation/:operationId', auth, reporteController.deleteOperationReport)
+
 module.exports = router

@@ -32,10 +32,7 @@ class Report extends Component {
             })
     }
 
-    closeModal = (e) => {
-        e.preventDefault()
-        this.setState({showModal: false})
-    }
+      
 
     render() {
 
@@ -363,8 +360,7 @@ class Report extends Component {
                 <MyModal
                     onHide={() => this.setState({ showModal: false })}
                     showModal={this.state.showModal}
-                    reporteId={this.state.report.id}
-                    closeModal={this.closeModal}
+                    reporteId={this.state.report.id}                    
                 />
             </Fragment>
         )

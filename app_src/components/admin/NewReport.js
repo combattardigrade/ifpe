@@ -13,7 +13,9 @@ class NewReport extends Component {
         loading: true,
         serverRes: '',
         alertError: true,
-        csrf: ''
+        csrf: '',
+        redirect: false,
+        reporteId: ''
     }
 
     componentDidMount() {
@@ -40,7 +42,7 @@ class NewReport extends Component {
                     this.setState({alertError: true, serverRes: res.message})
                     return
                 } else if ('id' in res) {
-                    this.setState({alertError: false, serverRes: 'Reporte nuevo generado correctamente.'})
+                    this.setState({alertError: false, serverRes: 'Reporte nuevo generado correctamente.', reporteId: res.id, redirect: true})
                     // redirect
                     return
                 } else {
@@ -52,10 +54,14 @@ class NewReport extends Component {
 
     render() {
 
-        const { serverRes, alertError, loading } = this.state
+        const { serverRes, alertError, loading, redirect, reporteId } = this.state
 
         if (loading) {
             <Loading />
+        }
+
+        if (redirect) {
+            return <Redirect to={{ pathname: '/admin/reporte/' + reporteId, state: { from: this.props.location.pathname } }} />
         }
 
         return (

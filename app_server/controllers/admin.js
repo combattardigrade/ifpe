@@ -395,9 +395,51 @@ module.exports.addOperation = function(req, res) {
             sendJSONresponse(res, 200, response)
             return
         })
-        .catch((err) => {
-            //console.log(err)
-            //err = JSON.parse(err)
+        .catch((err) => {            
+            console.log(err.error)
+            sendJSONresponse(res, 200, err.error)
+        })
+}
+
+module.exports.deleteReport = function(req, res) {
+    const reporteId = req.params.reporteId
+    rp({
+        uri: API_HOST + '/pld/reporte/' + reporteId,
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        body: req.body,
+        json: true
+    })
+        .then((response) => {
+            sendJSONresponse(res, 200, response)
+            return
+        })
+        .catch((err) => {            
+            console.log(err.error)
+            sendJSONresponse(res, 200, err.error)
+        })
+}
+
+module.exports.deleteOperationReport = function(req, res) {
+    const operationId = req.params.operationId
+    rp({
+        uri: API_HOST + '/pld/reporte/deleteOperation/' + operationId,
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        body: req.body,
+        json: true
+    })
+        .then((response) => {
+            sendJSONresponse(res, 200, response)
+            return
+        })
+        .catch((err) => {            
             console.log(err.error)
             sendJSONresponse(res, 200, err.error)
         })

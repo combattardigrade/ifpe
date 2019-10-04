@@ -43,6 +43,8 @@ router.get('/pld/reportes/:page', auth, adminController.getAllReportsByPage)
 router.post('/pld/reporte', auth, adminController.createReport)
 router.get('/pld/reporte/:reportId', auth, adminController.getReportOperations)
 router.post('/pld/reporte/addOperation', auth, adminController.addOperation)
+router.delete('/pld/reporte/:reporteId', auth, adminController.deleteReport)
+router.delete('/pld/reporte/deleteOperation/:operationId', auth, adminController.deleteOperationReport)
 
 router.get('/*', adminController.renderAdminApp)
 

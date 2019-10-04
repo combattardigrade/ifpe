@@ -1,13 +1,16 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import Loading from '../Loading'
 import AddReportOperation from './AddReportOperation'
 // bootstrap
 import { Form, Row, Col, Button, Table, Modal, Tabs, Tab, OverlayTrigger, Popover } from 'react-bootstrap'
 
 // api
-import { getReportOperations } from '../../utils/api'
+import { getReportOperations, deleteOperation, deleteReport, getCSRFToken } from '../../utils/api'
+
+// alert
+import { withAlert } from 'react-alert'
 
 
 class Report extends Component {
@@ -16,7 +19,8 @@ class Report extends Component {
         serverRes: '',
         csrf: '',
         alertError: true,
-        showModal: false
+        showModal: false,
+        redirect: false
     }
 
     componentDidMount() {
@@ -30,17 +34,39 @@ class Report extends Component {
                 console.log(res)
                 self.setState({ loading: false, report: res })
             })
+        getCSRFToken()
+            .then(res => this.setState({ csrf: res.csrf }))
     }
 
-      
+    handleDeleteReport = (e) => {
+        e.preventDefault()
+        const { csrf } = this.state
+        const { match: { params } } = this.props
+        deleteReport({ reporteId: params.reporteId, _csrf: csrf })
+            .then(res => res.json())
+            .then(res => {
+                console.log(res)
+                if ('status' in res && res.status == 'OK') {
+                    this.setState({ redirect: true })
+                } else {
+                    this.props.alert.error(res.message)
+                    return
+                }
+            })
+    }
+
 
     render() {
 
-        const { report, loading } = this.state
+        const { report, loading, redirect } = this.state
 
 
         if (loading) {
             return <Loading />
+        }
+
+        if (redirect) {
+            return <Redirect to={{ pathname: '/admin/reportes/1', state: { from: this.props.location.pathname } }} />
         }
 
         return (
@@ -83,12 +109,17 @@ class Report extends Component {
                                         <Button onClick={e => this.setState({ showModal: true })}>Agregar operación</Button>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>Eliminar Reporte</td>
-                                    <td>
-                                        <Button variant="danger">Eliminar reporte</Button>
-                                    </td>
-                                </tr>
+                                {
+                                    report.status == 'incompleto'
+                                        ?
+                                        <tr>
+                                            <td>Eliminar Reporte</td>
+                                            <td>
+                                                <Button onClick={this.handleDeleteReport} variant="danger">Eliminar reporte</Button>
+                                            </td>
+                                        </tr>
+                                        : null
+                                }
                             </tbody>
                         </Table>
 
@@ -360,7 +391,7 @@ class Report extends Component {
                 <MyModal
                     onHide={() => this.setState({ showModal: false })}
                     showModal={this.state.showModal}
-                    reporteId={this.state.report.id}                    
+                    reporteId={this.state.report.id}
                 />
             </Fragment>
         )
@@ -398,4 +429,4 @@ function mapStateToProps() {
     }
 }
 
-export default connect(mapStateToProps)(Report)
+export default withAlert()(connect(mapStateToProps)(Report))

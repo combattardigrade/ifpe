@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { getAllReportsByPage } from '../../utils/api'
+import { getAllReportsByPage, getCSRFToken, deleteReport } from '../../utils/api'
 import Loading from '../Loading'
 // bootstrap
 import { Row, Col, Button, Table } from 'react-bootstrap'
+// alert
+import { withAlert } from 'react-alert'
 
 class ListReports extends Component {
 
@@ -12,7 +14,8 @@ class ListReports extends Component {
         loading: true,
         count: '',
         pages: '',
-        results: {}
+        results: {},
+        csrf: ''
     }
 
     componentDidMount() {
@@ -25,6 +28,25 @@ class ListReports extends Component {
             .then(res => {
                 console.log(res)
                 self.setState({ loading: false, results: res.result, count: res.count, pages: res.pages })
+            })
+        getCSRFToken()
+            .then(res => self.setState({ csrf: res.csrf }))
+    }
+
+    handleDeleteReport = (reporteId) => {
+        if(!reporteId) 
+            return this.props.alert.error("Ocurrió un error al intentar realizar la operación")
+        const { csrf, results } = this.state       
+        deleteReport({ reporteId, _csrf: csrf })
+            .then(res => res.json())
+            .then(res => {
+                console.log(res)
+                if ('status' in res && res.status == 'OK') {
+                    this.setState({ results: results.filter(r => r.id != reporteId)})
+                } else {
+                    this.props.alert.error(res.message)
+                    return
+                }
             })
     }
 
@@ -75,9 +97,7 @@ class ListReports extends Component {
                                                 {
                                                     r.status == 'incompleto'
                                                         ?
-                                                        <Link to={"/admin/reporte/" + r.id}>
-                                                            <Button variant="danger">Eliminar</Button>
-                                                        </Link>
+                                                        <Button onClick={e => { e.preventDefault; this.handleDeleteReport(r.id) }} variant="danger">Eliminar</Button>
                                                         : null
                                                 }
                                             </td>
@@ -121,4 +141,4 @@ function mapStateToProps() {
     }
 }
 
-export default connect(mapStateToProps)(ListReports)
+export default withAlert()(connect(mapStateToProps)(ListReports))

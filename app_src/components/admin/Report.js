@@ -12,6 +12,8 @@ import { getReportOperations, deleteOperation, deleteReport, getCSRFToken } from
 // alert
 import { withAlert } from 'react-alert'
 
+// CSV
+import { CSVLink } from 'react-csv'
 
 class Report extends Component {
     state = {
@@ -20,7 +22,9 @@ class Report extends Component {
         csrf: '',
         alertError: true,
         showModal: false,
-        redirect: false
+        redirect: false,
+        fileData: [],
+        fileName: ''
     }
 
     componentDidMount() {
@@ -84,6 +88,94 @@ class Report extends Component {
         )
     }
 
+    handleGenerateReport = (event, done) => {        
+        let ops = this.state.report.operacionReportes        
+        // order by folio
+        ops = Object.values(ops).sort((a,b) => {
+            return parseInt(a.folio)  - parseInt(b.folio)
+        })
+        // generate new array
+        let data = []
+        for(let i = 0; i < ops.length; i++) {
+            data.push([
+                // column 1
+                ops[i].tipoReporte.toUpperCase(),
+                // column 2
+                ops[i].periodoReporte.toUpperCase(),
+                // column 3
+                ops[i].folio.toUpperCase(),
+                // column 4
+                ops[i].organoSupervisor.toUpperCase(),
+                // column 5
+                ops[i].claveSujetoObligado.toUpperCase(),
+                // column 6
+                ops[i].localidad.toUpperCase(),
+                // column 7
+                ops[i].codigoPostalSucursal.toUpperCase(),
+                // column 8
+                ops[i].tipoOperacion.toUpperCase(),
+                // column 9
+                ops[i].instrumentoMonetario.toUpperCase(),
+                // column 10
+                ops[i].numeroCuenta.toUpperCase(),
+                // column 11
+                ops[i].monto.toUpperCase(),
+                // column 12
+                ops[i].moneda.toUpperCase(),
+                // column 13
+                ops[i].fechaOperacion.toUpperCase(),
+                // column 14
+                ops[i].fechaDeteccionOperacion.toUpperCase(),
+                // column 15
+                ops[i].nacionalidad.toUpperCase(),
+                // column 16
+                ops[i].tipoPersona.toUpperCase(),
+                // column 17
+                ops[i].razonSocial.toUpperCase(),
+                // column 18
+                ops[i].nombre.toUpperCase(),
+                // column 19
+                ops[i].apellidoPaterno.toUpperCase(),
+                // column 20
+                ops[i].apellidoMaterno.toUpperCase(),
+                // column 21
+                ops[i].rfc.toUpperCase(),
+                // column 22
+                ops[i].curp.toUpperCase(),
+                // column 23
+                ops[i].fechaNacimiento.toUpperCase(),
+                // column 24
+                ops[i].domicilio.toUpperCase(),
+                // column 25
+                ops[i].colonia.toUpperCase(),
+                // column 26
+                ops[i].ciudad.toUpperCase(),
+                // column 27
+                ops[i].telefono.toUpperCase(),
+                // column 28
+                ops[i].actividadEconomica.toUpperCase(),
+                // column 29
+                ops[i].consecutivoCuentas.toUpperCase(),
+                // column 30
+                ops[i].numeroCuentaOperacionRelacionada.toUpperCase(),
+                // column 31
+                ops[i].claveSujetoObligadoOperacionRelacionada.toUpperCase(),
+                // column 32
+                ops[i].nombrePersonaRelacionada.toUpperCase(),
+                // column 33
+                ops[i].apellidoPaternoPersonaRelacionada.toUpperCase(),
+                // column 34
+                ops[i].apellidoMaternoPersonaRelacionada.toUpperCase(),
+                // column 35
+                ops[i].descripcionOperacion.toUpperCase(),
+                // column 36
+                ops[i].razones.toUpperCase(),
+            ])
+        }
+        const fileName = ops[0].tipoReporte + ops[0].claveSujetoObligado + ops[0].periodoReporte + '.' + ops[0].organoSupervisor
+        this.setState({fileData: data, fileName}, done())        
+    }
+
 
     render() {
 
@@ -121,10 +213,6 @@ class Report extends Component {
                                     <td>{report.operacionReportes.length}</td>
                                 </tr>
                                 <tr>
-                                    <td>Total operaciones principales</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
                                     <td>Fecha de última modificación</td>
                                     <td>{report.updatedAt}</td>
                                 </tr>
@@ -132,7 +220,21 @@ class Report extends Component {
                                     <td>Fecha de creación</td>
                                     <td>{report.createdAt}</td>
                                 </tr>
+                                <tr>
+                                    <td>Descargar Reporte</td>
+                                    <td>
 
+                                        <CSVLink
+                                            data={this.state.fileData}
+                                            separator={";"}
+                                            asyncOnClick={true}
+                                            onClick={this.handleGenerateReport}
+                                            filename={this.state.fileName}
+                                        >
+                                            Descargar reporte
+                                        </CSVLink>
+                                    </td>
+                                </tr>
                                 {
                                     report.status == 'incompleto'
                                         ?
@@ -143,6 +245,7 @@ class Report extends Component {
                                                     <Button onClick={e => this.setState({ showModal: true })}>Agregar operación</Button>
                                                 </td>
                                             </tr>
+
                                             <tr>
                                                 <td>Eliminar Reporte</td>
                                                 <td>
@@ -209,8 +312,8 @@ class Report extends Component {
                                                         <tr>
                                                             <td>5</td>
                                                             <td>Clave o número de registro del Sujeto Obligado</td>
-                                                            <td>{op.sujetoObligado}</td>
-                                                            <td>{op.sujetoObligado}</td>
+                                                            <td>{op.claveSujetoObligado}</td>
+                                                            <td>{op.claveSujetoObligado}</td>
                                                         </tr>
                                                         <tr>
                                                             <td>6</td>
@@ -325,42 +428,42 @@ class Report extends Component {
                                                             <td>Fecha de nacimiento o constitución</td>
                                                             <td>{op.fechaNacimiento}</td>
                                                             <td>{op.fechaNacimiento}</td>
-                                                        </tr>
+                                                        </tr>                                                        
                                                         <tr>
                                                             <td>24</td>
-                                                            <td>Razón social o denominación</td>
-                                                            <td>{op.razonSocial}</td>
-                                                            <td>{op.razonSocial}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>25</td>
                                                             <td>Domicilio</td>
                                                             <td>{op.domicilio}</td>
                                                             <td>{op.domicilio}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td>26</td>
+                                                            <td>25</td>
                                                             <td>Colonia</td>
                                                             <td>{op.colonia}</td>
                                                             <td>{op.colonia}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td>27</td>
+                                                            <td>26</td>
                                                             <td>Ciudad o población</td>
                                                             <td>{op.ciudad}</td>
                                                             <td>{op.ciudad}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td>28</td>
+                                                            <td>27</td>
                                                             <td>Teléfono</td>
                                                             <td>{op.telefono}</td>
                                                             <td>{op.telefono}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td>29</td>
+                                                            <td>28</td>
                                                             <td>Actividad económica</td>
                                                             <td>{op.actividadEconomica}</td>
                                                             <td>{op.actividadEconomica}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>29</td>
+                                                            <td>Consecutivo de cuentas y/o personas relacionadas</td>
+                                                            <td>{op.consecutivoCuentas}</td>
+                                                            <td>{op.consecutivoCuentas}</td>
                                                         </tr>
                                                         <tr>
                                                             <td>30</td>

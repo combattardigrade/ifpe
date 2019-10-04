@@ -55,6 +55,29 @@ class Report extends Component {
             })
     }
 
+    handleDeleteOperation = (operationId) => {
+        if (!operationId)
+            return this.props.alert.error("Ocurrió un error al intentar realizar la operación")
+        const { csrf, report } = this.state
+        deleteOperation({ operationId, _csrf: csrf })
+            .then(res => res.json())
+            .then(res => {
+                console.log(res)
+                if ('status' in res && res.status == 'OK') {
+                    this.setState({
+                        report: {
+                            ...report,
+                            operacionReportes: report.operacionReportes.filter(op => op.id != operationId)
+                        }
+                    })
+                    this.props.alert.show(res.message)
+                } else {
+                    this.props.alert.error(res.message)
+                    return
+                }
+            })
+    }
+
 
     render() {
 
@@ -374,9 +397,15 @@ class Report extends Component {
                                                         </tr>
                                                     </tbody>
                                                 </Table>
-                                                <div style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
-                                                    <Button variant="danger">Eliminar Operación No. {(index + 1)}</Button>
-                                                </div>
+                                                {
+                                                    report.status == 'incompleto'
+                                                        ?
+                                                        <div style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
+                                                            <Button onClick={e => { e.preventDefault(); this.handleDeleteOperation(op.id) }} variant="danger">Eliminar Operación No. {(index + 1)}</Button>
+                                                        </div>
+                                                        : null
+                                                }
+
                                             </Tab>
                                         )
 

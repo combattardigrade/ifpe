@@ -282,7 +282,7 @@ module.exports.addOperation = (req, res) => {
         let operacion = await OperacionReporte.findOne({ where: { reporteId, folio, }, transaction: t })
 
         if (operacion && 'categoria' in operacion) {
-            if (operacion.categoria == 'principal') {
+            if (operacion.categoria == 'principal' && !consecutivoCuentas || operacion.categoria == 'principal' && consecutivoCuentas == '00') {
                 sendJSONresponse(res, 404, { message: 'Ya existe una operación principal en el reporte con el Folio ingresado' })
                 return
             }
@@ -537,6 +537,24 @@ module.exports.addOperation = (req, res) => {
                 sendJSONresponse(res, 404, { message: 'Ingresa un Identificador Consecutivo de Cuentas válido. El campo debe medir 2 caracteres. Si es una Operación Relacionada, el consecutivo deberá ir desde `01` hasta el `n` número de personas o cuentas relacionadas.' })
                 return
             }
+
+            operacion = await OperacionReporte.findOne({
+                where: {
+                    reporteId, 
+                    categoria: 'relacionada', 
+                    folio,
+                    consecutivoCuentas
+                }, 
+                transaction: t
+            })
+
+            if(operacion) {
+                sendJSONresponse(res, 404, {message: 'Ya existe una operación relacionada con el mismo folio y consecutivo de cuentas'})
+                return
+            }
+
+
+
             // Check columna 30 - Numero de cuenta, contrato de la operacion relacionada
             if (!numeroCuentaOperacionRelacionada || numeroCuentaOperacionRelacionada.length > 16) {
                 sendJSONresponse(res, 404, { message: 'Ingresa un número de cuenta o contrato de la Operación Relacioada. El campo debe medir máximo 16 caracteres.' })

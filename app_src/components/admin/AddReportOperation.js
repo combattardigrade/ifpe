@@ -81,8 +81,7 @@ class AddReportOperation extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault()
-        console.log('click')
-
+        
         // check data client side ?
         const { tipoReporte, periodoReporte, folio, organoSupervisor, claveSujetoObligado, localidad, codigoPostalSucursal,
             tipoOperacion, instrumentoMonetario, numeroCuenta, monto, moneda, fechaOperacion, fechaDeteccionOperacion,
@@ -93,7 +92,7 @@ class AddReportOperation extends Component {
         } = this.state
         
         if(!reporteId || !tipoReporte || !periodoReporte || !folio || !organoSupervisor || !claveSujetoObligado) {
-            this.setState({serverRes: 'Ingresa todos los campos requeridos'})
+            this.setState({serverRes: 'Ingresa todos los campos requeridos'})            
             return
         }
 
@@ -115,6 +114,8 @@ class AddReportOperation extends Component {
                 } else if ('id' in res) {
                     this.setState({serverRes:'Operación añadida correctamente',alertError: false,})
                     this.props.closeModal()
+                    // should be using redux but use this because of time contraints
+                    window.location.reload()
                     return
                 }
             })

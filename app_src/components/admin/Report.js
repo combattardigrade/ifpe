@@ -42,40 +42,46 @@ class Report extends Component {
         e.preventDefault()
         const { csrf } = this.state
         const { match: { params } } = this.props
-        deleteReport({ reporteId: params.reporteId, _csrf: csrf })
-            .then(res => res.json())
-            .then(res => {
-                console.log(res)
-                if ('status' in res && res.status == 'OK') {
-                    this.setState({ redirect: true })
-                } else {
-                    this.props.alert.error(res.message)
-                    return
-                }
-            })
+        let c = confirm('¿Estas seguro que deseas eliminar el reporte y todas sus operaciones?')
+        c && (
+            deleteReport({ reporteId: params.reporteId, _csrf: csrf })
+                .then(res => res.json())
+                .then(res => {
+                    console.log(res)
+                    if ('status' in res && res.status == 'OK') {
+                        this.setState({ redirect: true })
+                    } else {
+                        this.props.alert.error(res.message)
+                        return
+                    }
+                })
+        )
     }
 
     handleDeleteOperation = (operationId) => {
         if (!operationId)
             return this.props.alert.error("Ocurrió un error al intentar realizar la operación")
         const { csrf, report } = this.state
-        deleteOperation({ operationId, _csrf: csrf })
-            .then(res => res.json())
-            .then(res => {
-                console.log(res)
-                if ('status' in res && res.status == 'OK') {
-                    this.setState({
-                        report: {
-                            ...report,
-                            operacionReportes: report.operacionReportes.filter(op => op.id != operationId)
-                        }
-                    })
-                    this.props.alert.show(res.message)
-                } else {
-                    this.props.alert.error(res.message)
-                    return
-                }
-            })
+        let c = confirm('¿Estas seguro que deseas eliminar la operación?')
+        c && (
+            deleteOperation({ operationId, _csrf: csrf })
+                .then(res => res.json())
+                .then(res => {
+                    console.log(res)
+                    if ('status' in res && res.status == 'OK') {
+                        this.setState({
+                            report: {
+                                ...report,
+                                operacionReportes: report.operacionReportes.filter(op => op.id != operationId)
+                            }
+                        })
+                        this.props.alert.show(res.message)
+                    } else {
+                        this.props.alert.error(res.message)
+                        return
+                    }
+                })
+        )
     }
 
 
@@ -126,21 +132,24 @@ class Report extends Component {
                                     <td>Fecha de creación</td>
                                     <td>{report.createdAt}</td>
                                 </tr>
-                                <tr>
-                                    <td>Agregar Operación</td>
-                                    <td>
-                                        <Button onClick={e => this.setState({ showModal: true })}>Agregar operación</Button>
-                                    </td>
-                                </tr>
+
                                 {
                                     report.status == 'incompleto'
                                         ?
-                                        <tr>
-                                            <td>Eliminar Reporte</td>
-                                            <td>
-                                                <Button onClick={this.handleDeleteReport} variant="danger">Eliminar reporte</Button>
-                                            </td>
-                                        </tr>
+                                        <Fragment>
+                                            <tr>
+                                                <td>Agregar Operación</td>
+                                                <td>
+                                                    <Button onClick={e => this.setState({ showModal: true })}>Agregar operación</Button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Eliminar Reporte</td>
+                                                <td>
+                                                    <Button onClick={this.handleDeleteReport} variant="danger">Eliminar reporte</Button>
+                                                </td>
+                                            </tr>
+                                        </Fragment>
                                         : null
                                 }
                             </tbody>

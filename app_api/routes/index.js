@@ -54,6 +54,7 @@ router.post('/pld/sendUnusualOperationReport', auth, pldController.sendUnusualOp
 router.post('/pld/addNameToList', auth, pldController.addNameToList)
 router.get('/pld/getRiskFactors/:elemento/:page', auth, pldController.getRiskFactors)
 router.put('/pld/editRiskFactor', auth, pldController.editRiskFactor)
+router.put('/pld/changeUserRiskLevel', auth, pldController.changeClientRiskLevel)
 
 // pld => reporte
 router.post('/pld/reporte', auth, reporteController.createReport)

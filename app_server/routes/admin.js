@@ -39,6 +39,7 @@ router.get('/pld/getListByPage/:list/:page', auth, adminController.getListByPage
 router.post('/pld/addNameToList', auth, adminController.addNameToList)
 router.get('/pld/getRiskFactors/:elemento/:page', auth, adminController.getRiskFactors)
 router.put('/pld/editRiskFactor', auth, adminController.editRiskFactor)
+router.put('/pld/changeUserRiskLevel', auth, adminController.changeClientRiskLevel)
 router.get('/pld/reportes/:page', auth, adminController.getAllReportsByPage)
 router.post('/pld/reporte', auth, adminController.createReport)
 router.get('/pld/reporte/:reportId', auth, adminController.getReportOperations)

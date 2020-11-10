@@ -444,3 +444,24 @@ module.exports.deleteOperationReport = function(req, res) {
             sendJSONresponse(res, 200, err.error)
         })
 }
+
+module.exports.changeClientRiskLevel = (req, res) => {    
+    rp({
+        uri: API_HOST + '/pld/changeUserRiskLevel',
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + req.cookies.token
+        },
+        body: req.body,
+        json: true
+    })
+        .then((response) => {
+            sendJSONresponse(res, 200, response)
+            return
+        })
+        .catch((err) => {            
+            console.log(err.error)
+            sendJSONresponse(res, 200, err.error)
+        })
+}

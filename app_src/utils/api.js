@@ -9,6 +9,18 @@ export function getCSRFToken() {
         .then(res => res.json())
 }
 
+export function changeUserRiskLevel(params) {
+    const url = API + 'pld/changeUserRiskLevel'
+    return fetch(url, {
+        method: 'PUT',
+        body: JSON.stringify(params),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+    })
+}
+
 export function deleteOperation(params) {
     const url = API + 'pld/reporte/deleteOperation/' + params.operationId
     return fetch(url, {

@@ -1,31 +1,66 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
-import { Row, Col, Button, Table, Tabs, Tab, Modal } from 'react-bootstrap'
-import { getClientProfile } from '../../utils/api'
+import { Row, Col, Button, Table, Tabs, Tab, Modal, Form } from 'react-bootstrap'
+import { getClientProfile, changeUserRiskLevel, getCSRFToken } from '../../utils/api'
 import { Link } from 'react-router-dom'
 import Loading from '../Loading'
+// alert
+import { withAlert } from 'react-alert'
 
 class UserProfile extends Component {
     state = {
         loading: true,
         user: {},
         docHash: '',
-        showModal: false
+        showModal: false,
+        csrf: ''
     }
 
     componentDidMount() {
         const { match: { params }, dispatch } = this.props
-        
+
         getClientProfile(params.userId)
             .then(res => res.json())
             .then((res) => {
                 console.log(res)
                 this.setState({ loading: false, user: res.user })
             })
+        
+            getCSRFToken()
+                .then(res => this.setState({ csrf: res.csrf}))
     }
 
     handleShowDocument(docHash) {
         this.setState({ showModal: true, docHash: docHash })
+    }
+
+    handleChangeRiskLevel = (e) => {
+        e.preventDefault()
+        const newRiskLevel = e.target.value
+        const { match: { params } } = this.props
+        const { csrf } = this.state
+        let c = confirm('¿Estás seguro de que quieres cambiar el Nivel de Riesgo del Cliente?')
+        c && (
+            changeUserRiskLevel({newRiskLevel, clientId: params.userId, _csrf: csrf})
+            .then(res => res.json())
+            .then(res => {
+                console.log(res)
+                if('status' in res && res.status == 'OK') {
+                    this.props.alert.show(res.message)
+                    this.setState({
+                        user: {
+                            ...this.state.user,
+                            userProfile: {
+                                ...this.state.user.userProfile,
+                                nivelRiesgo: newRiskLevel
+                            }
+                        }
+                    })
+                } else {
+                    this.props.alert.error(res.message)
+                }
+            })
+        )        
     }
 
     render() {
@@ -35,7 +70,7 @@ class UserProfile extends Component {
         if (loading) {
             return <Loading />
         }
-        console.log(user.documents.length)
+        
         return (
             <Fragment>
                 <Row style={{ marginTop: 40 }}>
@@ -190,7 +225,7 @@ class UserProfile extends Component {
                                         <Table striped bordered hover>
                                             <thead>
                                                 <tr>
-                                                    
+
                                                     <td>TxID</td>
                                                     <td>Tipo</td>
                                                     <td>Metodo</td>
@@ -200,7 +235,7 @@ class UserProfile extends Component {
                                                     <td>IVA</td>
                                                     <td>Procedencia</td>
                                                     <td>Destino</td>
-                                                    <td>Clave de rastreo</td>                                                    
+                                                    <td>Clave de rastreo</td>
                                                     <td>Fecha</td>
                                                     <td>Estado</td>
                                                 </tr>
@@ -214,8 +249,8 @@ class UserProfile extends Component {
                                                                 <td>{tx.id}</td>
                                                                 <td>{tx.operation}</td>
                                                                 <td>{tx.method}</td>
-                                                                <td>{tx.currency}</td>                                                                
-                                                                <td>{tx.amount}</td>                                                                
+                                                                <td>{tx.currency}</td>
+                                                                <td>{tx.amount}</td>
                                                                 <td>{tx.fees}</td>
                                                                 <td>{tx.tax}</td>
                                                                 <td>{tx.fromAccount}</td>
@@ -277,6 +312,35 @@ class UserProfile extends Component {
                                     </Col>
                                 </Row>
                             </Tab>
+
+                            <Tab eventKey="acciones" title="Acciones">
+                                <Row style={{ marginTop: 20 }}>
+                                    <Col md={{ span: 12 }}>
+                                        <h3>Balances</h3>
+                                        <Table striped bordered hover>
+                                            <thead>
+                                                <tr>
+                                                    <td>Campo</td>
+                                                    <td>Acción</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Cambiar nivel de riesgo</td>
+                                                    <td>
+                                                        <Form.Control value={user.userProfile.nivelRiesgo ? user.userProfile.nivelRiesgo : 'bajo'}  as="select" onChange={this.handleChangeRiskLevel}>
+                                                            <option value="bajo">Riesgo Bajo</option>
+                                                            <option value="medio">Riesgo Medio</option>
+                                                            <option value="alto">Riesgo Alto</option>
+                                                        </Form.Control>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </Table>
+                                    </Col>
+                                </Row>
+                            </Tab>
+
                         </Tabs>
                     </Col>
                 </Row>
@@ -315,4 +379,4 @@ function mapStateToProps({ }) {
     }
 }
 
-export default connect(mapStateToProps)(UserProfile)
+export default withAlert()(connect(mapStateToProps)(UserProfile))

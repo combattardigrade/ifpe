@@ -15,16 +15,16 @@ const moment = require('moment')
 const sendJSONresponse = require('../../utils/index').sendJSONresponse
 
 
-function generateReportFile (params) {
+function generateReportFile(params) {
     const tipoReporte = params.tipoReporte
 
-    if(!tipoReporte) 
-        return 'Ingresa el Tipo de Reporte'    
-    if(tipoReporte.length !== 1)
-        return 
+    if (!tipoReporte)
+        return 'Ingresa el Tipo de Reporte'
+    if (tipoReporte.length !== 1)
+        return
 }
 
-module.exports.generateReport = (req, res) => { 
+module.exports.generateReport = (req, res) => {
     const userId = req.user.id
     const tipoReporte = req.body.tipoReporte
     const periodoReporte = req.body.periodoReporte
@@ -33,8 +33,8 @@ module.exports.generateReport = (req, res) => {
     const claveRegistroSujetoObligado = req.body.claveRegistroSujetoObligado
     const localidad = req.body.localidad
 
-    if(!userId || !operationId) {
-        sendJSONresponse(res, 404, {message: 'Ingresa todos los campos requeridos'})
+    if (!userId || !operationId) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
         return
     }
 
@@ -50,8 +50,8 @@ module.exports.generateReport = (req, res) => {
             transaction: t
         })
 
-        if(!user) {
-            sendJSONresponse(res,404,{message: 'El usuario no existe o no tiene suficientes privilegios'})
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'El usuario no existe o no tiene suficientes privilegios' })
             return
         }
 
@@ -59,7 +59,7 @@ module.exports.generateReport = (req, res) => {
     })
         .catch((err) => {
             console.log(err)
-            sendJSONresponse(res,404,{message: 'Ocurrió un error al intentar realizar la operación'})
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
             return
         })
 }
@@ -106,13 +106,13 @@ module.exports.editRiskFactor = (req, res) => {
             return
         }
 
-        if(nivel == 'bajo')
+        if (nivel == 'bajo')
             ponderacion = 1
         else if (nivel == 'medio')
             ponderacion = 2
         else if (nivel == 'alto')
             ponderacion = 3
-                
+
         riskFactor.indicador = indicador
         riskFactor.nivel = nivel
         riskFactor.ponderacion = ponderacion
@@ -203,7 +203,7 @@ module.exports.getRiskFactors = (req, res) => {
         sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
         return
     }
-    
+
     sequelize.transaction(async (t) => {
         let user = await User.findOne({
             where: {
@@ -1550,7 +1550,7 @@ module.exports.sendUnusualOperationReport = (req, res) => {
         unusualOperation.oficialCumplimientoId = userId
         await unusualOperation.save({ transaction: t })
 
-        if(dictamen == 'procedente') {
+        if (dictamen == 'procedente') {
             let userProfile = await UserProfile.findOne({
                 where: {
                     userId: unusualOperation.userId
@@ -1559,10 +1559,77 @@ module.exports.sendUnusualOperationReport = (req, res) => {
             })
 
             userProfile.nivelRiesgo = 'alto'
-            await userProfile.save({transaction: t})
+            await userProfile.save({ transaction: t })
         }
 
         sendJSONresponse(res, 200, unusualOperation)
+        return
+    })
+        .catch((err) => {
+            console.log(err)
+            sendJSONresponse(res, 404, { message: 'Ocurrió un error al intentar realizar la operación' })
+            return
+        })
+}
+
+module.exports.changeClientRiskLevel = function (req, res) {
+    const adminId = req.user.id
+    const clientId = req.body.clientId
+    const newRiskLevel = req.body.newRiskLevel
+
+    if (!adminId || !clientId || !newRiskLevel) {
+        sendJSONresponse(res, 404, { message: 'Ingresa todos los campos requeridos' })
+        return
+    }
+
+    if(!['bajo','medio','alto'].includes(newRiskLevel)) {
+        sendJSONresponse(res,404,{message: 'Ingresa un nivel de riesgo válido'})
+        return
+    }
+
+    sequelize.transaction(async (t) => {
+        let admin = await User.findOne({
+            where: {
+                id: adminId,
+                accountType: 'admin',
+                accountLevel: {
+                    [Op.gte]: 2
+                }
+            },
+            transaction: t
+        })
+
+        if (!admin) {
+            sendJSONresponse(res, 404, { message: 'La cuenta de administrador no existe o no cuenta con suficientes privilegios' })
+            return
+        }
+
+        let user = await User.findOne({
+            where: {
+                id: clientId,
+            },
+            include: [
+                {
+                    model: UserProfile,
+                    where: {
+                        nivelRiesgo: {
+                            [Op.not]: 'alto'
+                        }
+                    }
+                }
+            ],
+            transaction: t
+        })
+
+        if (!user) {
+            sendJSONresponse(res, 404, { message: 'No es posible cambiar el nivel de riesgo de un cliente cuando este es considerado de Riesgo Alto o no existe' })
+            return
+        }
+
+        user.userProfile.nivelRiesgo = newRiskLevel
+        await user.userProfile.save({ transaction: t })
+
+        sendJSONresponse(res, 200, { message: 'Nivel de riesgo actualizado correctamente', status: 'OK' })
         return
     })
         .catch((err) => {
